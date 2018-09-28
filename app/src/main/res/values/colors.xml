@@ -13,5 +13,10 @@
     <color name="material_drawer_selected_text">#21AC56</color>
 
 
+    <!--toolbar colors-->
+    <color name="white">#fff</color>
+    <color name="black">#000</color>
+    <color name="gray_light">#bbb</color>
+
 </resources>
 

@@ -1,0 +1,29 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.mrgames13.jimdo.chatlet.App.MainActivity">
+
+    <item
+        android:id="@+id/action_undo"
+        android:enabled="false"
+        android:icon="@drawable/undo_white"
+        android:orderInCategory="100"
+        android:title="@string/undo"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_redo"
+        android:enabled="false"
+        android:icon="@drawable/redo_white"
+        android:orderInCategory="200"
+        android:title="@string/redo"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_done"
+        android:enabled="false"
+        android:icon="@drawable/done_white"
+        android:orderInCategory="300"
+        android:title="@string/done"
+        app:showAsAction="always" />
+</menu>

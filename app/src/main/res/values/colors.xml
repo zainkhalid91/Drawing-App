@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#21AC56</color>
+    <color name="colorPrimaryDark">#21AC56</color>
+    <color name="colorAccent">#21AC56</color>
 
 
     <color name="material_drawer_background">#2C2E3E</color>
@@ -17,6 +17,11 @@
     <color name="white">#fff</color>
     <color name="black">#000</color>
     <color name="gray_light">#bbb</color>
+
+    <!--FAB colors-->
+    <color name="colorFAB1">#aa37c7</color>
+    <color name="colorFAB2">#e61c45</color>
+    <color name="colorFAB3">#29d424</color>
 
 </resources>
 

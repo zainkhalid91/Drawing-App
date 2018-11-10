@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sothree="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/slidingLayout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/slidingLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
@@ -26,6 +26,53 @@
             app:brush="pen"
             app:brush_color="#000"
             app:drawing_background_color="#eee" />
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:src="@drawable/ic_add"
+            app:backgroundTint="@color/colorAccent"
+            app:elevation="6dp"
+            app:pressedTranslationZ="12dp" />
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="80dp"
+            android:src="@drawable/ic_search"
+            android:visibility="invisible"
+            app:backgroundTint="@color/colorFAB1"
+            app:elevation="6dp"
+            app:fabSize="normal"
+            app:pressedTranslationZ="12dp" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="140dp"
+            android:src="@drawable/ic_done"
+            android:visibility="invisible"
+            app:backgroundTint="@color/colorFAB2"
+            app:elevation="6dp"
+            app:fabSize="normal"
+            app:pressedTranslationZ="12dp" />
+
+
     </RelativeLayout>
 
     <RelativeLayout
@@ -75,8 +122,8 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_below="@+id/color_preview"
-            android:layout_marginBottom="5dp"
             android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
             android:background="@color/gray_light" />
 
         <com.raed.drawingview.BrushView
@@ -90,8 +137,8 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_below="@+id/brush_view"
-            android:layout_marginBottom="5dp"
             android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
             android:background="@color/gray_light" />
 
         <ScrollView
@@ -126,8 +173,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/color_preview_slide"
-                    android:layout_marginBottom="5dp"
                     android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
                     android:max="100"
                     android:min="1"
                     android:progress="25" />
@@ -175,8 +222,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@+id/utility"
-                    android:layout_marginBottom="5dp"
                     android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
                     android:background="@color/gray_light" />
 
                 <RadioGroup
@@ -247,8 +294,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@+id/background"
-                    android:layout_marginBottom="5dp"
                     android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
                     android:background="@color/gray_light" />
 
                 <Button
@@ -256,11 +303,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/seperator04"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="5dp"
                     android:text="@string/clear_image" />
             </RelativeLayout>
         </ScrollView>
     </RelativeLayout>
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
 
     <!--<android.support.v7.widget.Toolbar
           android:id="@+id/toolbar"

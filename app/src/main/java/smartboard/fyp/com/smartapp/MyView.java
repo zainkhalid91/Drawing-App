@@ -15,12 +15,12 @@ import java.util.ArrayList;
 
 public class MyView extends View {
 
-    static MainActivity drawingActivity;
     private ArrayList<xy> drawList;
     private float offsetX, offsetY;
     private boolean touching = false;
     private Bitmap bm;
     private SparseArray<PointF> mActivePointers;
+    static MainActivity drawingActivity;
 
     public MyView(Context context) {
         super(context);
@@ -37,10 +37,6 @@ public class MyView extends View {
         init();
     }
 
-    public static void getInstance(MainActivity drawingAct) {
-        drawingActivity = drawingAct;
-    }
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         setMeasuredDimension(
@@ -48,22 +44,22 @@ public class MyView extends View {
                 MeasureSpec.getSize(heightMeasureSpec));
     }
 
-    private void init() {
+    private void init(){
         bm = BitmapFactory.decodeResource(
                 getResources(),
                 R.drawable.ic_action_name);
-        offsetX = bm.getWidth() / 2;
-        offsetY = bm.getHeight() / 2;
+        offsetX = bm.getWidth()/2;
+        offsetY = bm.getHeight()/2;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawColor(Color.GRAY);
-        if (touching) {
-            for (xy pt : drawList) {
+        if(touching){
+            for(xy pt : drawList){
                 canvas.drawBitmap(bm,
-                        pt.getX() - offsetX,
-                        pt.getY() - offsetY,
+                        pt.getX()-offsetX,
+                        pt.getY()-offsetY,
                         null);
             }
         }
@@ -115,20 +111,24 @@ public class MyView extends View {
         return true;
     }
 
-    class xy {
+    public static void getInstance(MainActivity drawingAct) {
+        drawingActivity= drawingAct;
+    }
+
+    class xy{
         float x;
         float y;
 
-        public xy(float x, float y) {
+        public xy(float x, float y){
             this.x = x;
             this.y = y;
         }
 
-        public float getX() {
+        public float getX(){
             return x;
         }
 
-        public float getY() {
+        public float getY(){
             return y;
         }
     }

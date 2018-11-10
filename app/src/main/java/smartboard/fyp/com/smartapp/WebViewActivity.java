@@ -1,15 +1,19 @@
 package smartboard.fyp.com.smartapp;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
+import android.support.annotation.Nullable;
 import android.webkit.WebViewClient;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 
 public class WebViewActivity extends AppCompatActivity {
@@ -22,7 +26,7 @@ public class WebViewActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.web_view_activity);
-        webView = findViewById(R.id.webView);
+        webView = (WebView) findViewById(R.id.webView);
        /* close = (ImageView) findViewById(R.id.close_iv);
         close.setClickable(true);
         close.setOnClickListener(new View.OnClickListener() {
@@ -53,6 +57,7 @@ public class WebViewActivity extends AppCompatActivity {
                     progressDialog = new ProgressDialog(WebViewActivity.this);
                     progressDialog.setMessage("Loading...");
                     progressDialog.show();
+                    ;
                 }
             }
 

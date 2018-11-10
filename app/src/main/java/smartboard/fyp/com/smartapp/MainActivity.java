@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -22,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,8 +63,12 @@ import java.util.ArrayList;
 
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
+import ja.burhanrashid52.photoeditor.OnPhotoEditorListener;
+import ja.burhanrashid52.photoeditor.PhotoEditor;
+import ja.burhanrashid52.photoeditor.PhotoEditorView;
+import ja.burhanrashid52.photoeditor.ViewType;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements OnPhotoEditorListener ,View.OnClickListener {
     private static MainActivity activity;
     Toolbar toolbar;
     TabLayout tabLayout;
@@ -71,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     /*FAB declaration*/
     private boolean isFabOpen = false;
-    private FloatingActionButton fab, fab1, fab2;
+    private FloatingActionButton fab, fab1, fab2,fab3,fab4;
     private Animation fab_open, fab_close, rotate_forward, rotate_backwards;
 
 
@@ -115,8 +121,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //Variables
     private boolean pressedOnce;
 
-
-    /*navigation drawer*/
+	BrushSettings settings;
+	/*navigation drawer*/
     private AccountHeader header = null;
     private Drawer result = null;
 
@@ -143,11 +149,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tabProfile = findViewById(R.id.tab_Profile);
         viewPager = (findViewById(R.id.viewpager));*/
 
-        fab = findViewById(R.id.fab);
-        fab1 = findViewById(R.id.fab1);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab1 = (FloatingActionButton) findViewById(R.id.fab1);
         fab1.setSize(FloatingActionButton.SIZE_NORMAL);
-        fab2 = findViewById(R.id.fab2);
+        fab2 = (FloatingActionButton) findViewById(R.id.fab2);
         fab2.setSize(FloatingActionButton.SIZE_NORMAL);
+        fab3 = (FloatingActionButton) findViewById(R.id.fab3);
+        fab3.setSize(FloatingActionButton.SIZE_NORMAL);
+        fab4 = (FloatingActionButton) findViewById(R.id.fab4);
+        fab4.setSize(FloatingActionButton.SIZE_NORMAL);
 
         fab_open = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
         fab_close = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
@@ -156,6 +166,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab.setOnClickListener(this);
         fab1.setOnClickListener(this);
         fab2.setOnClickListener(this);
+        fab3.setOnClickListener(this);
+        fab4.setOnClickListener(this);
 
 
         slidingUpPanelLayout = findViewById(R.id.slidingLayout);
@@ -206,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         brush_view = findViewById(R.id.brush_view);
         brush_view.setDrawingView(drawing_view);
 
-        final BrushSettings settings = drawing_view.getBrushSettings();
+       settings = drawing_view.getBrushSettings();
 
         color_preview_slide = findViewById(R.id.color_preview_slide);
         choose_color = findViewById(R.id.choose_color);
@@ -248,6 +260,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         pencil = findViewById(R.id.utility_pencil);
+
         pencil.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -402,6 +415,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         final IProfile profile = new ProfileDrawerItem().withName("Zain Ali Khalid").withEmail("zain.khalid@gmail.com").withIcon(R.drawable.user).withIdentifier(100);
 
+
         header = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withTranslucentStatusBar(true)
@@ -464,11 +478,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (id == R.id.action_done) {
             Bitmap b = drawing_view.exportDrawing();
 
-            File file = new File(getCacheDir(), "drawing");
+            File file = new File(Environment.getExternalStorageDirectory()
+					+ File.separator + ""
+					+ System.currentTimeMillis() + ".png");
             if (file.exists()) file.delete();
             try {
+				file.createNewFile();
+
                 FileOutputStream out = new FileOutputStream(file);
-                b.compress(Bitmap.CompressFormat.JPEG, IMAGE_COMPRESSION_QUALITY, out);
+                b.compress(Bitmap.CompressFormat.PNG, IMAGE_COMPRESSION_QUALITY, out);
                 out.flush();
                 out.close();
             } catch (Exception e) {
@@ -478,7 +496,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             i.putExtra(DRAWING_PATH, file.getAbsolutePath());
 
             setResult(RESULT_OK, i);
-            finish();
+            Toast.makeText(getApplicationContext(),"Saved Successfully",Toast.LENGTH_SHORT).show();
         } else if (id == R.id.action_undo) {
             drawing_view.undo();
             menu.findItem(R.id.action_undo).setEnabled(!drawing_view.isUndoStackEmpty());
@@ -500,7 +518,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    @Override
+	@Override
+	public void onEditTextChangeListener(final View rootView, String text, int colorCode) {
+		TextEditorDialogFragment textEditorDialogFragment =
+				TextEditorDialogFragment.show(this, text, colorCode);
+		textEditorDialogFragment.setOnTextEditorListener(new TextEditorDialogFragment.TextEditor() {
+			@Override
+			public void onDone(String inputText, int colorCode) {
+
+			}
+		});
+	}
+
+	@Override
+	public void onAddViewListener(ViewType viewType, int numberOfAddedViews) {
+
+	}
+
+	@Override
+	public void onRemoveViewListener(int numberOfAddedViews) {
+
+	}
+
+	@Override
+	public void onRemoveViewListener(ViewType viewType, int numberOfAddedViews) {
+
+	}
+
+	@Override
+	public void onStartViewChangeListener(ViewType viewType) {
+
+	}
+
+	@Override
+	public void onStopViewChangeListener(ViewType viewType) {
+
+	}
+
+	@Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.DRAGGING) {
@@ -653,9 +708,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.fab2:
 
                 Log.d("pencil", "Fab 2");
+				settings.setSelectedBrush(Brushes.PENCIL);
+				settings.setSelectedBrushSize(size.getProgress() / 100.0f);
+				current_utility.setText(getString(R.string.pencil));
 
                 break;
-        }
+
+			case R.id.fab3:
+
+				Log.d("eraser", "Fab 3");
+				settings.setSelectedBrush(Brushes.ERASER);
+				settings.setSelectedBrushSize(size.getProgress() / 100.0f);
+				current_utility.setText(getString(R.string.eraser));
+				break;
+
+				case R.id.fab4:
+
+					TextEditorDialogFragment textEditorDialogFragment = TextEditorDialogFragment.show(this);
+					textEditorDialogFragment.setOnTextEditorListener(new TextEditorDialogFragment.TextEditor() {
+						@Override
+						public void onDone(String inputText, int colorCode) {
+						
+						}
+					});
+					break;
+		}
 
 
     }
@@ -666,8 +743,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             fab.startAnimation(rotate_backwards);
             fab1.startAnimation(fab_close);
             fab2.startAnimation(fab_close);
+            fab3.startAnimation(fab_close);
+            fab4.startAnimation(fab_close);
             fab1.setClickable(false);
             fab2.setClickable(false);
+            fab3.setClickable(false);
+            fab4.setClickable(false);
+
             isFabOpen = false;
             Log.d("Menu", "close");
 
@@ -676,8 +758,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             fab.startAnimation(rotate_forward);
             fab1.startAnimation(fab_open);
             fab2.startAnimation(fab_open);
+            fab3.startAnimation(fab_open);
+            fab4.startAnimation(fab_open);
             fab1.setClickable(true);
             fab2.setClickable(true);
+            fab3.setClickable(true);
+            fab4.setClickable(true);
             isFabOpen = true;
             Log.d("Menu", "open");
 

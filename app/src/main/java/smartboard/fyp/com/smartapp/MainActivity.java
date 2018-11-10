@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -18,11 +19,14 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -58,12 +62,17 @@ import java.util.ArrayList;
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static MainActivity activity;
     Toolbar toolbar;
     TabLayout tabLayout;
     ViewPager viewPager;
     //TabItem tabProfile;
+
+    /*FAB declaration*/
+    private boolean isFabOpen = false;
+    private FloatingActionButton fab, fab1, fab2;
+    private Animation fab_open, fab_close, rotate_forward, rotate_backwards;
 
 
     public static final String DRAWING_PATH = "DrawingPath";
@@ -133,6 +142,20 @@ public class MainActivity extends AppCompatActivity {
          /*tabLayout = findViewById(R.id.tablayout);
         tabProfile = findViewById(R.id.tab_Profile);
         viewPager = (findViewById(R.id.viewpager));*/
+
+        fab = findViewById(R.id.fab);
+        fab1 = findViewById(R.id.fab1);
+        fab1.setSize(FloatingActionButton.SIZE_NORMAL);
+        fab2 = findViewById(R.id.fab2);
+        fab2.setSize(FloatingActionButton.SIZE_NORMAL);
+
+        fab_open = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
+        fab_close = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
+        rotate_backwards = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_backwards);
+        rotate_forward = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_forward);
+        fab.setOnClickListener(this);
+        fab1.setOnClickListener(this);
+        fab2.setOnClickListener(this);
 
 
         slidingUpPanelLayout = findViewById(R.id.slidingLayout);
@@ -606,5 +629,58 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         result.setSelection(-1);
+    }
+
+    @Override
+    public void onClick(View view) {
+
+        int id = view.getId();
+        switch (id) {
+            case R.id.fab:
+
+                animateFAB();
+                break;
+            case R.id.fab1:
+                Log.d("Web", "Fab 1");
+                fab1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+                        startActivity(intent);
+                    }
+                });
+                break;
+            case R.id.fab2:
+
+                Log.d("pencil", "Fab 2");
+
+                break;
+        }
+
+
+    }
+
+    private void animateFAB() {
+        if (isFabOpen) {
+
+            fab.startAnimation(rotate_backwards);
+            fab1.startAnimation(fab_close);
+            fab2.startAnimation(fab_close);
+            fab1.setClickable(false);
+            fab2.setClickable(false);
+            isFabOpen = false;
+            Log.d("Menu", "close");
+
+        } else {
+
+            fab.startAnimation(rotate_forward);
+            fab1.startAnimation(fab_open);
+            fab2.startAnimation(fab_open);
+            fab1.setClickable(true);
+            fab2.setClickable(true);
+            isFabOpen = true;
+            Log.d("Menu", "open");
+
+        }
     }
 }

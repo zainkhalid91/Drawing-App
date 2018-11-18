@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SmartApp</string>
+    <string name="app_name">Smart Board App</string>
 
 
     <string name="drawing">Drawing</string>
@@ -24,4 +24,6 @@
     <string name="cancel">Cancel</string>
     <string name="yes">Yes</string>
     <string name="press_again_to_discard_drawing">Tap once again to discard the drawing</string>
+    <string name="save">Save</string>
+    <string name="enter_zoom_mode">Pinch to Zoom</string>
 </resources>

@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -23,10 +24,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -63,12 +65,8 @@ import java.util.ArrayList;
 
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
-import ja.burhanrashid52.photoeditor.OnPhotoEditorListener;
-import ja.burhanrashid52.photoeditor.PhotoEditor;
-import ja.burhanrashid52.photoeditor.PhotoEditorView;
-import ja.burhanrashid52.photoeditor.ViewType;
 
-public class MainActivity extends AppCompatActivity implements OnPhotoEditorListener ,View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static MainActivity activity;
     Toolbar toolbar;
     TabLayout tabLayout;
@@ -77,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
 
     /*FAB declaration*/
     private boolean isFabOpen = false;
-    private FloatingActionButton fab, fab1, fab2,fab3,fab4;
+    BrushSettings settings;
     private Animation fab_open, fab_close, rotate_forward, rotate_backwards;
 
 
@@ -91,39 +89,41 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
     private final int IMAGE_COMPRESSION_QUALITY = 85;
     private final int REQ_WRITE_EXTERNAL_STORAGE = 1;
     MyView myView;
-    //Variables as objects
+    boolean flag = false;
     private Menu menu;
     private SlidingUpPanelLayout slidingUpPanelLayout;
     private DrawingView drawing_view;
     private ImageView color_preview;
     private TextView current_utility;
-    private TextView current_size;
+    private FloatingActionButton fab, fab1, fab2, fab3, fab4;
     private ImageView arrow;
     private BrushView brush_view;
-    private ImageView color_preview_slide;
-    private Button choose_color;
+    //Variables as objects
+    private ImageView calligraphy, pen, airbrush, eraser, pencil;
+    private TextView current_size, resetZoom_tv;
     private SeekBar size;
-    private RadioButton pencil;
-    private RadioButton eraser;
-    private RadioButton airbrush;
-    private RadioButton calligraphy;
-    private RadioButton pen;
+    private ImageView overflow_menu, save_menu, ppt_menu, pdf_menu, resetZoom_menu, clearCanvas_menu, exit_menu;
+    private ImageView choose_color;
+
+
     private RadioButton background_color;
     private RadioButton background_image;
     private ImageView background_color_preview;
     private Button choose_background_color;
     private ImageView background_image_preview;
     private Button choose_background_image;
-    private Button clear_image;
     private ColorPickerDialog color_picker;
     private int current_color = Color.BLACK;
     private int current_background_color = Color.parseColor("#eeeeee");
     //Variables
     private boolean pressedOnce;
-
-	BrushSettings settings;
-	/*navigation drawer*/
-    private AccountHeader header = null;
+    private ImageView image_color_white, image_color_black,
+            image_color_red, image_color_yellow, image_color_green,
+            image_color_blue, image_color_pink, image_color_brown,
+            image_color_light_brown, image_color_dark_brown, image_color_light_pink, image_color_dark_red,
+            image_color_orange, image_color_light_orange, image_color_light_green, image_color_dark_green,
+            image_color_light_blue, image_color_dark_blue, image_color_purle, image_color_dark_grey;
+    private ConstraintLayout menuLayout;
     private Drawer result = null;
 
     public static MainActivity getInstance() {
@@ -134,29 +134,49 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
     }
 
     /*Layout Handling*/
+    /*navigation drawer*/
+    private AccountHeader header = null;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
+        getMenuInflater().inflate(R.menu.menu_drawing, menu);
+        menu.findItem(R.id.action_undo).getIcon().setAlpha(130);
+        menu.findItem(R.id.action_redo).getIcon().setAlpha(130);
+        menu.findItem(R.id.action_done).getIcon().setAlpha(130);
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         Intent i = getIntent();
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(null);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if (Build.VERSION.SDK_INT >= 21)
             getWindow().setStatusBarColor(darkenColor(getResources().getColor(R.color.colorPrimary)));
+
+
+
          /*tabLayout = findViewById(R.id.tablayout);
         tabProfile = findViewById(R.id.tab_Profile);
         viewPager = (findViewById(R.id.viewpager));*/
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab1 = (FloatingActionButton) findViewById(R.id.fab1);
+        fab = findViewById(R.id.fab);
+        fab1 = findViewById(R.id.fab1);
         fab1.setSize(FloatingActionButton.SIZE_NORMAL);
-        fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+        fab2 = findViewById(R.id.fab2);
+
         fab2.setSize(FloatingActionButton.SIZE_NORMAL);
-        fab3 = (FloatingActionButton) findViewById(R.id.fab3);
+        fab3 = findViewById(R.id.fab3);
         fab3.setSize(FloatingActionButton.SIZE_NORMAL);
-        fab4 = (FloatingActionButton) findViewById(R.id.fab4);
+        fab4 = findViewById(R.id.fab4);
         fab4.setSize(FloatingActionButton.SIZE_NORMAL);
 
         fab_open = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
@@ -168,6 +188,48 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
         fab2.setOnClickListener(this);
         fab3.setOnClickListener(this);
         fab4.setOnClickListener(this);
+
+        menuLayout = findViewById(R.id.menu_layout);
+
+        overflow_menu = findViewById(R.id.overflow_menu);
+        save_menu = findViewById(R.id.save_menu);
+        ppt_menu = findViewById(R.id.ppt_menu);
+        pdf_menu = findViewById(R.id.pdf_menu);
+        clearCanvas_menu = findViewById(R.id.clearCanvas_menu);
+        resetZoom_menu = findViewById(R.id.resetZoom_menu);
+        exit_menu = findViewById(R.id.exitApp_menu);
+        overflow_menu.setOnClickListener(this);
+        save_menu.setOnClickListener(this);
+        ppt_menu.setOnClickListener(this);
+        pdf_menu.setOnClickListener(this);
+        resetZoom_menu.setOnClickListener(this);
+        clearCanvas_menu.setOnClickListener(this);
+        exit_menu.setOnClickListener(this);
+
+
+        image_color_white = findViewById(R.id.image_color_white);
+        image_color_light_brown = findViewById(R.id.image_color_light_brown);
+        image_color_brown = findViewById(R.id.image_color_brown);
+        image_color_dark_brown = findViewById(R.id.image_color_dark_brown);
+        image_color_light_pink = findViewById(R.id.image_color_light_pink);
+        image_color_pink = findViewById(R.id.image_color_pink);
+        image_color_red = findViewById(R.id.image_color_red);
+        image_color_dark_red = findViewById(R.id.image_color_dark_red);
+        image_color_orange = findViewById(R.id.image_color_orange);
+        image_color_light_orange = findViewById(R.id.image_color_light_orange);
+        image_color_yellow = findViewById(R.id.image_color_yellow);
+        image_color_light_green = findViewById(R.id.image_color_light_green);
+        image_color_green = findViewById(R.id.image_color_green);
+        image_color_dark_green = findViewById(R.id.image_color_dark_green);
+        image_color_light_blue = findViewById(R.id.image_color_light_blue);
+        image_color_blue = findViewById(R.id.image_color_blue);
+        image_color_dark_blue = findViewById(R.id.image_color_dark_blue);
+        image_color_purle = findViewById(R.id.image_color_purle);
+        image_color_dark_grey = findViewById(R.id.image_color_dark_grey);
+        image_color_black = findViewById(R.id.image_color_black);
+        ColorSelector();
+
+
 
 
         slidingUpPanelLayout = findViewById(R.id.slidingLayout);
@@ -195,6 +257,8 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
                 menu.findItem(R.id.action_redo).getIcon().setAlpha(130);
                 menu.findItem(R.id.action_done).setEnabled(true);
                 menu.findItem(R.id.action_done).getIcon().setAlpha(255);
+                menuLayout.setVisibility(View.INVISIBLE);
+
             }
         });
 
@@ -218,9 +282,9 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
         brush_view = findViewById(R.id.brush_view);
         brush_view.setDrawingView(drawing_view);
 
-       settings = drawing_view.getBrushSettings();
+        settings = drawing_view.getBrushSettings();
 
-        color_preview_slide = findViewById(R.id.color_preview_slide);
+        //color_preview_slide = findViewById(R.id.color_preview_slide);
         choose_color = findViewById(R.id.choose_color);
         choose_color.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -233,13 +297,14 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
                     public void onColorChanged(int color) {
                         current_color = color;
                         color_preview.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
-                        color_preview_slide.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
+                        //color_preview_slide.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
                         settings.setColor(color);
                     }
                 });
                 color_picker.show();
             }
         });
+
 
         size = findViewById(R.id.size);
         size.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -261,75 +326,65 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
 
         pencil = findViewById(R.id.utility_pencil);
 
-        pencil.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        pencil.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    settings.setSelectedBrush(Brushes.PENCIL);
-                    settings.setSelectedBrushSize(size.getProgress() / 100.0f);
-                    current_utility.setText(getString(R.string.pencil));
-                }
+            public void onClick(View view) {
+                settings.setSelectedBrush(Brushes.PENCIL);
+                settings.setSelectedBrushSize(size.getProgress() / 100.0f);
+                current_utility.setText(getString(R.string.pencil));
             }
         });
 
 
         eraser = findViewById(R.id.utility_eraser);
-        eraser.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        eraser.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    settings.setSelectedBrush(Brushes.ERASER);
-                    settings.setSelectedBrushSize(size.getProgress() / 100.0f);
-                    current_utility.setText(getString(R.string.eraser));
-                }
+            public void onClick(View view) {
+                settings.setSelectedBrush(Brushes.ERASER);
+                settings.setSelectedBrushSize(size.getProgress() / 100.0f);
+                current_utility.setText(getString(R.string.eraser));
             }
         });
 
         pen = findViewById(R.id.utility_pen);
-        pen.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        pen.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    settings.setSelectedBrush(Brushes.PEN);
-                    settings.setSelectedBrushSize(size.getProgress() / 100.0f);
-                    current_utility.setText(getString(R.string.pen));
-                }
+            public void onClick(View view) {
+                settings.setSelectedBrush(Brushes.PEN);
+                settings.setSelectedBrushSize(size.getProgress() / 100.0f);
+                current_utility.setText(getString(R.string.pen));
             }
         });
 
 
         calligraphy = findViewById(R.id.utility_calligraphy);
-        calligraphy.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        calligraphy.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    settings.setSelectedBrush(Brushes.CALLIGRAPHY);
-                    settings.setSelectedBrushSize(size.getProgress() / 100.0f);
-                    current_utility.setText(getString(R.string.calligraphy));
-                }
+            public void onClick(View view) {
+                settings.setSelectedBrush(Brushes.CALLIGRAPHY);
+                settings.setSelectedBrushSize(size.getProgress() / 100.0f);
+                current_utility.setText(getString(R.string.calligraphy));
             }
         });
 
         airbrush = findViewById(R.id.utility_airbrush);
-        airbrush.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        airbrush.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    settings.setSelectedBrush(Brushes.AIR_BRUSH);
-                    settings.setSelectedBrushSize(size.getProgress() / 100.0f);
-                    current_utility.setText(getString(R.string.air_brush));
-                }
+            public void onClick(View view) {
+                settings.setSelectedBrush(Brushes.AIR_BRUSH);
+                settings.setSelectedBrushSize(size.getProgress() / 100.0f);
+                current_utility.setText(getString(R.string.air_brush));
             }
         });
 
         if (getIntent().getIntExtra(DrawingActivityBuilder.DEFAULT_UTILITY, MainActivity.UTILITIY_PENCIL) == MainActivity.UTILITIY_ERASER)
-            eraser.setChecked(true);
+            ;
         if (getIntent().getIntExtra(DrawingActivityBuilder.DEFAULT_UTILITY, MainActivity.UTILITIY_PENCIL) == MainActivity.UTILITIY_AIR_BRUSH)
-            airbrush.setChecked(true);
+            ;
         if (getIntent().getIntExtra(DrawingActivityBuilder.DEFAULT_UTILITY, MainActivity.UTILITIY_PENCIL) == MainActivity.UTILITIY_CALLIGRAPHY)
-            calligraphy.setChecked(true);
+            ;
         if (getIntent().getIntExtra(DrawingActivityBuilder.DEFAULT_UTILITY, MainActivity.UTILITIY_PENCIL) == MainActivity.UTILITIY_PEN)
-            pen.setChecked(true);
+            ;
 
         //Background
         background_color = findViewById(R.id.background_color);
@@ -342,10 +397,10 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 background_color_preview.setEnabled(b);
+
                 choose_background_color.setEnabled(b);
             }
         });
-
 
         background_image.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -384,11 +439,11 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
             }
         });
 
-        clear_image = findViewById(R.id.clear);
-        clear_image.setOnClickListener(new View.OnClickListener() {
+        clearCanvas_menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 clear();
+                menuLayout.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -461,16 +516,6 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
-        getMenuInflater().inflate(R.menu.menu_drawing, menu);
-        menu.findItem(R.id.action_undo).getIcon().setAlpha(130);
-        menu.findItem(R.id.action_redo).getIcon().setAlpha(130);
-        menu.findItem(R.id.action_done).getIcon().setAlpha(130);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
@@ -479,11 +524,11 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
             Bitmap b = drawing_view.exportDrawing();
 
             File file = new File(Environment.getExternalStorageDirectory()
-					+ File.separator + ""
-					+ System.currentTimeMillis() + ".png");
+                    + File.separator + ""
+                    + System.currentTimeMillis() + ".png");
             if (file.exists()) file.delete();
             try {
-				file.createNewFile();
+                file.createNewFile();
 
                 FileOutputStream out = new FileOutputStream(file);
                 b.compress(Bitmap.CompressFormat.PNG, IMAGE_COMPRESSION_QUALITY, out);
@@ -496,7 +541,7 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
             i.putExtra(DRAWING_PATH, file.getAbsolutePath());
 
             setResult(RESULT_OK, i);
-            Toast.makeText(getApplicationContext(),"Saved Successfully",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.action_undo) {
             drawing_view.undo();
             menu.findItem(R.id.action_undo).setEnabled(!drawing_view.isUndoStackEmpty());
@@ -515,57 +560,6 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
             menu.findItem(R.id.action_done).getIcon().setAlpha(drawing_view.isUndoStackEmpty() ? 130 : 255);
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-	@Override
-	public void onEditTextChangeListener(final View rootView, String text, int colorCode) {
-		TextEditorDialogFragment textEditorDialogFragment =
-				TextEditorDialogFragment.show(this, text, colorCode);
-		textEditorDialogFragment.setOnTextEditorListener(new TextEditorDialogFragment.TextEditor() {
-			@Override
-			public void onDone(String inputText, int colorCode) {
-
-			}
-		});
-	}
-
-	@Override
-	public void onAddViewListener(ViewType viewType, int numberOfAddedViews) {
-
-	}
-
-	@Override
-	public void onRemoveViewListener(int numberOfAddedViews) {
-
-	}
-
-	@Override
-	public void onRemoveViewListener(ViewType viewType, int numberOfAddedViews) {
-
-	}
-
-	@Override
-	public void onStartViewChangeListener(ViewType viewType) {
-
-	}
-
-	@Override
-	public void onStopViewChangeListener(ViewType viewType) {
-
-	}
-
-	@Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.DRAGGING) {
-                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-            } else {
-                finishWarning();
-            }
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
     private void clear() {
@@ -687,7 +681,21 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.DRAGGING) {
+                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            } else {
+                finishWarning();
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
     public void onClick(View view) {
+
 
         int id = view.getId();
         switch (id) {
@@ -697,42 +705,54 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
                 break;
             case R.id.fab1:
                 Log.d("Web", "Fab 1");
-                fab1.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
-                        startActivity(intent);
-                    }
-                });
+
+                Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+                startActivity(intent);
+
                 break;
+
             case R.id.fab2:
 
                 Log.d("pencil", "Fab 2");
-				settings.setSelectedBrush(Brushes.PENCIL);
-				settings.setSelectedBrushSize(size.getProgress() / 100.0f);
-				current_utility.setText(getString(R.string.pencil));
+                settings.setSelectedBrush(Brushes.PEN);
+                settings.setSelectedBrushSize(size.getProgress() / 100.0f);
+                current_utility.setText(getString(R.string.pen));
 
                 break;
 
-			case R.id.fab3:
+            case R.id.fab3:
 
-				Log.d("eraser", "Fab 3");
-				settings.setSelectedBrush(Brushes.ERASER);
-				settings.setSelectedBrushSize(size.getProgress() / 100.0f);
-				current_utility.setText(getString(R.string.eraser));
-				break;
+                Log.d("eraser", "Fab 3");
+                settings.setSelectedBrush(Brushes.ERASER);
+                settings.setSelectedBrushSize(size.getProgress() / 25.0f);
+                current_utility.setText(getString(R.string.eraser));
+                current_size.setText(getString(R.string.current_size_) + " 100%");
 
-				case R.id.fab4:
 
-					TextEditorDialogFragment textEditorDialogFragment = TextEditorDialogFragment.show(this);
-					textEditorDialogFragment.setOnTextEditorListener(new TextEditorDialogFragment.TextEditor() {
-						@Override
-						public void onDone(String inputText, int colorCode) {
-						
-						}
-					});
-					break;
-		}
+                break;
+
+            case R.id.fab4:
+                if (flag) {
+
+                    drawing_view.isInZoomMode();
+                    drawing_view.exitZoomMode();
+                    fab4.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_zoom_in));
+
+                    flag = false;
+
+                } else if (!flag) {
+                    drawing_view.enterZoomMode();
+                    fab4.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_zoom_out));
+                    Toast toast = Toast.makeText(this, getString(R.string.enter_zoom_mode), Toast.LENGTH_LONG);
+                    toast.show();
+
+                    flag = true;
+                }
+
+                break;
+
+
+        }
 
 
     }
@@ -745,11 +765,11 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
             fab2.startAnimation(fab_close);
             fab3.startAnimation(fab_close);
             fab4.startAnimation(fab_close);
+
             fab1.setClickable(false);
             fab2.setClickable(false);
             fab3.setClickable(false);
             fab4.setClickable(false);
-
             isFabOpen = false;
             Log.d("Menu", "close");
 
@@ -760,6 +780,7 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
             fab2.startAnimation(fab_open);
             fab3.startAnimation(fab_open);
             fab4.startAnimation(fab_open);
+
             fab1.setClickable(true);
             fab2.setClickable(true);
             fab3.setClickable(true);
@@ -769,4 +790,351 @@ public class MainActivity extends AppCompatActivity implements OnPhotoEditorList
 
         }
     }
+
+    private void ColorSelector() {
+        image_color_white.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // int color = ResourcesCompat.getColor(getResources(), R.color.color_black,null);
+
+                color_preview.setColorFilter(-1, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-1);
+                scaleColorView(image_color_white);
+
+
+            }
+        });
+
+        image_color_light_brown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-3366510, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-3366510);
+                scaleColorView(image_color_light_brown);
+
+
+            }
+        });
+
+
+        image_color_brown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-7508381, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-7508381);
+                scaleColorView(image_color_brown);
+
+            }
+        });
+
+        image_color_dark_brown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-8695228, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-8695228);
+                scaleColorView(image_color_dark_brown);
+
+            }
+        });
+
+        image_color_light_pink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-21290, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-21290);
+                scaleColorView(image_color_light_pink);
+
+
+            }
+        });
+
+        image_color_pink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-383334, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-383334);
+                scaleColorView(image_color_pink);
+
+
+            }
+        });
+
+        image_color_red.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-1233362, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-1233362);
+                scaleColorView(image_color_red);
+
+
+            }
+        });
+        image_color_dark_red.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-5823966, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-5823966);
+                scaleColorView(image_color_dark_red);
+
+
+            }
+        });
+
+        image_color_light_orange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-151479, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-151479);
+                scaleColorView(image_color_light_orange);
+
+
+            }
+        });
+
+        image_color_orange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-759490, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-759490);
+                scaleColorView(image_color_orange);
+
+
+            }
+        });
+
+        image_color_yellow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-4853, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-4853);
+                scaleColorView(image_color_yellow);
+
+
+            }
+        });
+
+        image_color_light_green.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-14427564, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-14427564);
+                scaleColorView(image_color_light_green);
+
+
+            }
+        });
+
+        image_color_green.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-14442665, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-14442665);
+                scaleColorView(image_color_green);
+
+
+            }
+        });
+
+        image_color_dark_green.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-16619989, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-16619989);
+                scaleColorView(image_color_dark_green);
+
+
+            }
+        });
+
+        image_color_light_blue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-16731649, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-16731649);
+                scaleColorView(image_color_light_blue);
+
+
+            }
+        });
+
+        image_color_blue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-16742718, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-16742718);
+                scaleColorView(image_color_blue);
+
+
+            }
+        });
+
+        image_color_dark_blue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-16754818, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-16754818);
+                scaleColorView(image_color_dark_blue);
+
+
+            }
+        });
+
+        image_color_purle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-9959524, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-9959524);
+                scaleColorView(image_color_purle);
+
+
+            }
+        });
+        image_color_dark_grey.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-9868951, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-9868951);
+                scaleColorView(image_color_dark_grey);
+
+
+            }
+        });
+
+        image_color_black.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                color_preview.setColorFilter(-16777216, android.graphics.PorterDuff.Mode.SRC_IN);
+                settings.setColor(-16777216);
+                scaleColorView(image_color_black);
+
+
+            }
+        });
+
+        overflow_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (flag) {
+                    menuLayout.setVisibility(ConstraintLayout.VISIBLE);
+                    // menuLayout.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in));
+                    flag = false;
+                } else if (!flag) {
+                    menuLayout.setVisibility(ConstraintLayout.INVISIBLE);
+                    // menuLayout.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out ));
+                    flag = true;
+
+                }
+
+
+            }
+        });
+
+        exit_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+                System.exit(0);
+            }
+        });
+
+        resetZoom_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawing_view.resetZoom();
+                drawing_view.exitZoomMode();
+                menuLayout.setVisibility(View.INVISIBLE);
+            }
+        });
+    }
+
+
+    private void scaleColorView(View view) {
+        //reset scale of all views
+
+
+        image_color_white.setScaleX(1f);
+        image_color_white.setScaleY(1f);
+
+        image_color_light_brown.setScaleX(1f);
+        image_color_light_brown.setScaleY(1f);
+
+        image_color_brown.setScaleX(1f);
+        image_color_brown.setScaleY(1f);
+
+        image_color_dark_brown.setScaleX(1f);
+        image_color_dark_brown.setScaleY(1f);
+
+        image_color_light_pink.setScaleX(1f);
+        image_color_light_pink.setScaleY(1f);
+
+        image_color_pink.setScaleX(1f);
+        image_color_pink.setScaleY(1f);
+
+        image_color_red.setScaleX(1f);
+        image_color_red.setScaleY(1f);
+
+        image_color_dark_red.setScaleX(1f);
+        image_color_dark_red.setScaleY(1f);
+
+        image_color_light_orange.setScaleX(1f);
+        image_color_light_orange.setScaleY(1f);
+
+        image_color_orange.setScaleX(1f);
+        image_color_orange.setScaleY(1f);
+
+        image_color_yellow.setScaleX(1f);
+        image_color_yellow.setScaleY(1f);
+
+        image_color_light_green.setScaleX(1f);
+        image_color_light_green.setScaleY(1f);
+
+        image_color_green.setScaleX(1f);
+        image_color_green.setScaleY(1f);
+
+        image_color_dark_green.setScaleX(1f);
+        image_color_dark_green.setScaleY(1f);
+
+        image_color_light_blue.setScaleX(1f);
+        image_color_light_blue.setScaleY(1f);
+
+        image_color_blue.setScaleX(1f);
+        image_color_blue.setScaleY(1f);
+
+        image_color_dark_blue.setScaleX(1f);
+        image_color_dark_blue.setScaleY(1f);
+
+        image_color_purle.setScaleX(1f);
+        image_color_purle.setScaleY(1f);
+
+        image_color_dark_grey.setScaleX(1f);
+        image_color_dark_grey.setScaleY(1f);
+
+        image_color_black.setScaleX(1f);
+        image_color_black.setScaleY(1f);
+
+        //set scale of selected view
+        view.setScaleX(1.5f);
+        view.setScaleY(1.5f);
+    }
+
+
 }

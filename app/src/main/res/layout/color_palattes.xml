@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:id="@+id/linLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp"
+        android:orientation="horizontal">
+
+
+        <ImageView
+            android:id="@+id/choose_color"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:scaleX="1.5"
+            android:scaleY="1.5"
+            android:src="@drawable/color_wheel" />
+
+
+        <ImageView
+            android:id="@+id/image_color_white"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:scaleX="1.5"
+            android:scaleY="1.5"
+            android:src="@drawable/circle_white" />
+
+        <ImageView
+            android:id="@+id/image_color_light_brown"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_light_brown" />
+
+        <ImageView
+            android:id="@+id/image_color_brown"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_brown" />
+
+        <ImageView
+            android:id="@+id/image_color_dark_brown"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_dark_brown" />
+
+        <ImageView
+            android:id="@+id/image_color_light_pink"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_light_pink" />
+
+        <ImageView
+            android:id="@+id/image_color_pink"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_pink" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp"
+        android:layout_below="@id/linLayout1"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/image_color_red"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_red" />
+
+        <ImageView
+            android:id="@+id/image_color_dark_red"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_dark_red" />
+
+        <ImageView
+            android:id="@+id/image_color_light_orange"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_light_orange" />
+
+        <ImageView
+            android:id="@+id/image_color_orange"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_orange" />
+
+        <ImageView
+            android:id="@+id/image_color_yellow"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_yellow" />
+
+        <ImageView
+            android:id="@+id/image_color_light_green"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_light_green" />
+
+        <ImageView
+            android:id="@+id/image_color_green"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_green" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linlayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp"
+        android:layout_below="@id/linLayout2"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/image_color_dark_green"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_dark_green" />
+
+        <ImageView
+            android:id="@+id/image_color_light_blue"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_light_blue" />
+
+        <ImageView
+            android:id="@+id/image_color_blue"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_blue" />
+
+        <ImageView
+            android:id="@+id/image_color_dark_blue"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_dark_blue" />
+
+        <ImageView
+            android:id="@+id/image_color_purle"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_purple" />
+
+        <ImageView
+            android:id="@+id/image_color_dark_grey"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_dark_grey" />
+
+        <ImageView
+            android:id="@+id/image_color_black"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:src="@drawable/circle_black" />
+    </LinearLayout>
+
+
+</RelativeLayout>

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.mrgames13.jimdo.chatlet.App.MainActivity">
 
+
     <item
         android:id="@+id/action_undo"
         android:enabled="false"
@@ -26,4 +27,14 @@
         android:orderInCategory="300"
         android:title="@string/done"
         app:showAsAction="always" />
+
+
+    <item
+        android:id="@+id/action_3dot"
+        android:enabled="true"
+        android:orderInCategory="400"
+        android:title=""
+        app:showAsAction="always">
+
+    </item>
 </menu>

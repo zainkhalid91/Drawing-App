@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:elevation="6dp">
+
+    <ImageView
+        android:id="@+id/save_menu"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="18dp"
+        android:background="@color/white"
+        android:src="@drawable/ic_save"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Save"
+        android:textColor="@color/color_dark_grey"
+        app:layout_constraintEnd_toEndOf="@+id/save_menu"
+        app:layout_constraintStart_toStartOf="@+id/save_menu"
+        app:layout_constraintTop_toBottomOf="@+id/save_menu" />
+
+    <ImageView
+        android:id="@+id/ppt_menu"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="18dp"
+        android:background="@color/white"
+        android:src="@drawable/ic_ppt"
+        app:layout_constraintStart_toEndOf="@+id/save_menu"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Open .ppt"
+        android:textColor="@color/color_dark_grey"
+        app:layout_constraintEnd_toEndOf="@+id/ppt_menu"
+        app:layout_constraintStart_toStartOf="@+id/ppt_menu"
+        app:layout_constraintTop_toBottomOf="@+id/ppt_menu" />
+
+    <ImageView
+        android:id="@+id/pdf_menu"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="18dp"
+        android:background="@color/white"
+        android:src="@drawable/ic_pdf"
+        app:layout_constraintStart_toEndOf="@+id/ppt_menu"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Open .pdf"
+        android:textColor="@color/color_dark_grey"
+        app:layout_constraintEnd_toEndOf="@+id/pdf_menu"
+        app:layout_constraintStart_toStartOf="@+id/pdf_menu"
+        app:layout_constraintTop_toBottomOf="@+id/pdf_menu" />
+
+    <ImageView
+        android:id="@+id/resetZoom_menu"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="50dp"
+        android:background="@color/white"
+        android:src="@drawable/ic_reset_zoom"
+        app:layout_constraintEnd_toEndOf="@+id/textView"
+        app:layout_constraintStart_toStartOf="@+id/textView"
+        app:layout_constraintTop_toTopOf="@+id/textView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Reset Zoom"
+        android:textColor="@color/color_dark_grey"
+        app:layout_constraintEnd_toEndOf="@+id/resetZoom_menu"
+        app:layout_constraintStart_toStartOf="@+id/resetZoom_menu"
+        app:layout_constraintTop_toBottomOf="@+id/resetZoom_menu" />
+
+
+    <ImageView
+        android:id="@+id/clearCanvas_menu"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="50dp"
+        android:background="@color/white"
+        android:src="@drawable/eraser"
+        app:layout_constraintEnd_toEndOf="@+id/ppt_menu"
+        app:layout_constraintStart_toStartOf="@+id/ppt_menu"
+        app:layout_constraintTop_toTopOf="@+id/textView2" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Clear Canvas"
+        android:textColor="@color/color_dark_grey"
+        app:layout_constraintEnd_toEndOf="@+id/clearCanvas_menu"
+        app:layout_constraintStart_toStartOf="@+id/clearCanvas_menu"
+        app:layout_constraintTop_toBottomOf="@+id/clearCanvas_menu" />
+
+    <ImageView
+        android:id="@+id/exitApp_menu"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="60dp"
+        android:background="@color/white"
+        android:src="@drawable/ic_exit"
+        app:layout_constraintEnd_toEndOf="@+id/pdf_menu"
+        app:layout_constraintStart_toStartOf="@+id/pdf_menu"
+        app:layout_constraintTop_toBottomOf="@+id/pdf_menu" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Exit"
+        android:textColor="@color/color_dark_grey"
+        app:layout_constraintEnd_toEndOf="@+id/exitApp_menu"
+        app:layout_constraintStart_toStartOf="@+id/exitApp_menu"
+        app:layout_constraintTop_toBottomOf="@+id/exitApp_menu" />
+
+
+</android.support.constraint.ConstraintLayout>

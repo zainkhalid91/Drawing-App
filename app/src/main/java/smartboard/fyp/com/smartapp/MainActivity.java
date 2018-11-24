@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -35,6 +34,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             image_color_light_brown, image_color_dark_brown, image_color_light_pink, image_color_dark_red,
             image_color_orange, image_color_light_orange, image_color_light_green, image_color_dark_green,
             image_color_light_blue, image_color_dark_blue, image_color_purle, image_color_dark_grey;
-    private ConstraintLayout menuLayout;
+    private RelativeLayout menuLayout;
     private Drawer result = null;
 
     public static MainActivity getInstance() {
@@ -444,6 +444,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View view) {
                 clear();
                 menuLayout.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        pdf_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), PdfViewer.class);
+                startActivity(intent);
+            }
+        });
+
+        ppt_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), PPTView.class);
+                startActivity(intent);
             }
         });
 
@@ -1034,11 +1050,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View view) {
                 if (flag) {
-                    menuLayout.setVisibility(ConstraintLayout.VISIBLE);
+                    menuLayout.setVisibility(RelativeLayout.VISIBLE);
                     // menuLayout.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in));
                     flag = false;
                 } else if (!flag) {
-                    menuLayout.setVisibility(ConstraintLayout.INVISIBLE);
+                    menuLayout.setVisibility(RelativeLayout.INVISIBLE);
                     // menuLayout.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out ));
                     flag = true;
 

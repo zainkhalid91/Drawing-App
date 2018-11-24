@@ -10,9 +10,7 @@
     sothree:umanoPanelHeight="60dp"
     sothree:umanoScrollableView="@id/scrollview"
     sothree:umanoShadowHeight="3dp"
-    tools:context=".MainActivity"
-
-    >
+    tools:context=".MainActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -74,10 +72,10 @@
             android:layout_marginRight="20dp"
             android:layout_marginBottom="80dp"
             android:focusableInTouchMode="true"
-            android:visibility="invisible"
             android:src="@drawable/ic_fab_search"
-            app:elevation="6dp"
+            android:visibility="invisible"
             app:backgroundTint="@color/colorFAB1"
+            app:elevation="6dp"
             app:fabSize="normal"
             app:pressedTranslationZ="12dp" />
 
@@ -178,12 +176,22 @@
             android:layout_height="1dp"
             android:layout_below="@+id/color_preview"
             android:layout_marginTop="15dp"
-            android:layout_marginBottom="5dp" />
+            android:layout_marginBottom="15dp" />
+
+        <TextView
+            android:id="@+id/brush_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/brush_view"
+            android:layout_centerHorizontal="true"
+            android:text="Brush View"
+            android:textSize="@dimen/text_size" />
 
         <com.raed.drawingview.BrushView
             android:id="@+id/brush_view"
             android:layout_width="match_parent"
             android:layout_height="80dp"
+            android:layout_marginTop="10dp"
             android:layout_below="@+id/seperator01" />
 
         <RelativeLayout
@@ -205,10 +213,14 @@
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="false">
 
-
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="Brush Size"
+                    android:textSize="@dimen/text_size" />
 
                 <SeekBar
-
                     android:id="@+id/size"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -220,13 +232,22 @@
                     android:progressDrawable="@drawable/custom_seekbar"
                     android:thumb="@drawable/custom_thumb_seekbar" />
 
+                <TextView
+                    android:id="@+id/tools_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/size"
+                    android:layout_centerHorizontal="true"
+                    android:text="Tools"
+                    android:textSize="@dimen/text_size" />
+
                 <LinearLayout
                     android:id="@+id/utility"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/size"
                     android:layout_marginTop="25dp"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginBottom="20dp"
                     android:orientation="horizontal"
                     android:weightSum="5">
 
@@ -276,8 +297,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/utility"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp" />
+                    android:layout_marginTop="5dp" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/color"
+                    android:layout_centerHorizontal="true"
+                    android:text="Colors"
+                    android:textSize="@dimen/text_size" />
+
 
                 <LinearLayout
                     android:id="@+id/color"
@@ -287,9 +317,8 @@
 
                     <include
                         layout="@layout/color_palattes"
-                        android:layout_height="170dp"
-                        android:layout_marginTop="15dp"
-                        android:layout_width="match_parent" />
+                        android:layout_width="match_parent"
+                        android:layout_height="170dp" />
                 </LinearLayout>
 
 
@@ -321,11 +350,11 @@
 
                         <Button
                             android:id="@+id/choose_background_color"
-                            android:layout_width="300dp"
-                            android:layout_marginLeft="10dp"
+                            android:layout_width="110dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="7dp"
                             android:layout_alignTop="@+id/background_color_preview"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginTop="7dp"
                             android:layout_toRightOf="@+id/background_color_preview"
                             android:background="@drawable/custom_button_background"
                             android:text="@string/choose_color"
@@ -352,15 +381,15 @@
 
                         <Button
                             android:id="@+id/choose_background_image"
-                            android:layout_width="300dp"
+                            android:layout_width="110dp"
                             android:layout_height="wrap_content"
                             android:layout_alignTop="@+id/background_image_preview"
-                            android:layout_toRightOf="@+id/background_image_preview"
-                            android:enabled="false"
                             android:layout_marginLeft="10dp"
+                            android:layout_toRightOf="@+id/background_image_preview"
                             android:background="@drawable/custom_button_background"
-                            android:textColor="@color/white"
-                            android:text="@string/choose_image" />
+                            android:enabled="false"
+                            android:text="@string/choose_image"
+                            android:textColor="@color/white" />
                     </RelativeLayout>
                 </RadioGroup>
             </RelativeLayout>

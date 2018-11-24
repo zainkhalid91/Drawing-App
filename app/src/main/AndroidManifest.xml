@@ -22,6 +22,10 @@
         </activity>
         <activity android:name=".WebViewActivity" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".PdfViewer" />
+        <activity android:name=".PdfActivity" />
+        <activity android:name=".PPTView" />
+        <activity android:name=".PPTActivity" />
     </application>
 
 </manifest>

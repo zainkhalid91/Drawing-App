@@ -20,19 +20,24 @@ import com.raed.drawingview.brushes.stampbrushes.StampBrushRenderer;
 class DrawingPerformer {
 
     private static final String TAG = "DrawingPerformer";
-    private final DrawingFilter mDrawingFilter = new DrawingFilter();
     private BrushRenderer mCurrentBrushRenderer;
+
+    private final DrawingFilter mDrawingFilter = new DrawingFilter();
+
     private DrawingPerformerListener mDrawingPerformerListener;
 
     private Bitmap mBitmap;//this is used for the eraser
     private Canvas mCanvas;
+    private DrawingEvent mTemDrawingEvent = new DrawingEvent();
+
     private StampBrushRenderer mStampBrushRenderer;
     private PathBrushRenderer mPathBrushRenderer;
+
     private DrawingBoundsRect mDrawingBoundsRect;
     private Brush mSelectedBrush;
     private boolean mDrawing = false;
+
     private Brushes mBrushes;
-    private DrawingEvent mTemDrawingEvent = new DrawingEvent();
 
     public DrawingPerformer(Brushes brushes) {
 
@@ -92,19 +97,19 @@ class DrawingPerformer {
         }
     }
 
+    void setWidthAndHeight(int width, int height) {
+        mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        mCanvas = new Canvas(mBitmap);
+
+        mStampBrushRenderer.setBitmap(mBitmap);
+    }
+
     void setPaintPerformListener(DrawingPerformerListener listener) {
         mDrawingPerformerListener = listener;
     }
 
     boolean isDrawing() {
         return mDrawing;
-    }
-
-    void setWidthAndHeight(int width, int height) {
-        mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        mCanvas = new Canvas(mBitmap);
-
-        mStampBrushRenderer.setBitmap(mBitmap);
     }
 
     private Rect getDrawingBoundsRect() {
@@ -119,17 +124,6 @@ class DrawingPerformer {
         int height = (int) (mDrawingBoundsRect.mMaxY - mDrawingBoundsRect.mMinY + size);
         height = height > (mBitmap.getHeight() - top) ? mBitmap.getHeight() - top : height;
         return new Rect(left, top, left + width, top + height);
-    }
-
-    private void updateSelectedBrush() {
-        int selectedBrushID = mBrushes.getBrushSettings().getSelectedBrush();
-        mSelectedBrush = mBrushes.getBrush(selectedBrushID);
-        if (mSelectedBrush instanceof StampBrush)
-            mCurrentBrushRenderer = mStampBrushRenderer;
-        else  //this means this is a path brush
-            mCurrentBrushRenderer = mPathBrushRenderer;
-        mCurrentBrushRenderer.setBrush(mSelectedBrush);
-        mDrawingFilter.setCurrentBrushStep(mSelectedBrush.getStep());
     }
 
     private void notifyListener() {
@@ -154,9 +148,19 @@ class DrawingPerformer {
         }
     }
 
+    private void updateSelectedBrush() {
+        int selectedBrushID = mBrushes.getBrushSettings().getSelectedBrush();
+        mSelectedBrush = mBrushes.getBrush(selectedBrushID);
+        if (mSelectedBrush instanceof StampBrush)
+            mCurrentBrushRenderer = mStampBrushRenderer;
+        else  //this means this is a path brush
+            mCurrentBrushRenderer = mPathBrushRenderer;
+        mCurrentBrushRenderer.setBrush(mSelectedBrush);
+        mDrawingFilter.setCurrentBrushStep(mSelectedBrush.getStep());
+    }
+
     interface DrawingPerformerListener {
         void onDrawingPerformed(Path path, Paint paint, Rect rect);
-
         void onDrawingPerformed(Bitmap bitmap, Rect rect);
     }
 
@@ -170,7 +174,7 @@ class DrawingPerformer {
         void update(DrawingEvent drawingEvent) {
             int size = drawingEvent.size();
             for (int i = 0; i + 1 < size; i += 2) {
-
+                
                 if (drawingEvent.mPoints[i] < mMinX)
                     mMinX = drawingEvent.mPoints[i];
                 else if (drawingEvent.mPoints[i] > mMaxX)

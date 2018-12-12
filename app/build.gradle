@@ -44,7 +44,8 @@ dependencies {
     implementation 'com.daimajia.androidanimations:library:2.3@aar'
     implementation 'com.github.ozodrukh:CircularReveal:1.1.1@aar'
     implementation 'com.github.wailbabou:Splasher:0.1.2'
-    implementation 'com.raed.drawingview:drawingview:1.3.0'
     implementation 'com.github.barteksc:android-pdf-viewer:2.0.3'
     implementation files('libs/itsrts-pptviewer.jar')
+    implementation 'com.github.ybq:Android-SpinKit:1.2.0'
+    implementation project(':drawingview')
 }

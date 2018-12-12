@@ -10,7 +10,6 @@ public class Calligraphy extends StampBrush {
 
     private float mHalfHeight;
     private float mHalfWidth;
-    private RectF mTempRectF = new RectF();
 
     public Calligraphy(int minSizePx, int maxSizePx, int frequency) {
         super(minSizePx, maxSizePx, frequency);
@@ -20,6 +19,7 @@ public class Calligraphy extends StampBrush {
         mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
     }
 
+    private RectF mTempRectF = new RectF();
     @Override
     public void drawFromTo(Canvas canvas, float lastDrawnPoint[], float x1, float y1) {
         float xTerm = x1 - lastDrawnPoint[0];

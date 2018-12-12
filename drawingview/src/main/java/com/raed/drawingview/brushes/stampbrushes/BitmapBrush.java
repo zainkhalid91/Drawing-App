@@ -8,10 +8,11 @@ import android.graphics.PorterDuffColorFilter;
 
 public class BitmapBrush extends StampBrush {
 
+    private Bitmap mOriginalBrush;
     Bitmap mResizedBrush;
     float mHalfResizedBrushHeight;
     float mHalfResizedBrushWidth;
-    private Bitmap mOriginalBrush;
+
     private Canvas mResizedBrushCanvas;
 
     public BitmapBrush(Bitmap bitmap, int minSizePx, int maxSizePx, int frequency) {

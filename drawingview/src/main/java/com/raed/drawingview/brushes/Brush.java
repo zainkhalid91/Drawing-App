@@ -6,10 +6,11 @@ import android.graphics.Paint;
 public abstract class Brush {
 
     protected Paint mPaint;
-    protected int mSizeInPixel;
+
     private float mSizeInPercentage;
     private int mMinSizeInPixel;
     private int mMaxSizeInPixel;
+    protected int mSizeInPixel;
 
     protected Brush(int minSizeInPixel, int maxSizeInPixel) {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
@@ -23,6 +24,12 @@ public abstract class Brush {
 
     public abstract void setColor(int color);
 
+    // pass a percentage
+    public void setSizeInPercentage(float sizeInPercentage) {
+        mSizeInPercentage = sizeInPercentage;
+        mSizeInPixel = (int) (mMinSizeInPixel + mSizeInPercentage * (mMaxSizeInPixel - mMinSizeInPixel));
+    }
+
     protected int getSizeInPixel() {
         return mSizeInPixel;
     }
@@ -33,12 +40,6 @@ public abstract class Brush {
 
     public float getSizeInPercentage() {
         return mSizeInPercentage;
-    }
-
-    // pass a percentage
-    public void setSizeInPercentage(float sizeInPercentage) {
-        mSizeInPercentage = sizeInPercentage;
-        mSizeInPixel = (int) (mMinSizeInPixel + mSizeInPercentage * (mMaxSizeInPixel - mMinSizeInPixel));
     }
 
     public int getSizeForSafeCrop() {

@@ -3,9 +3,9 @@ package com.raed.drawingview;
 
 public class DrawingEvent {
 
-    public float[] mPoints = new float[20000];
     private int mAction;//similar to MotionEvent actions
     private int mSize;
+    public float[] mPoints = new float[20000];
 
     void add(float x, float y) {
         mPoints[mSize] = x;
@@ -17,15 +17,15 @@ public class DrawingEvent {
         mSize = 0;
     }
 
+    void setAction(int action) {
+        mAction = action;
+    }
+
     public int size() {
         return mSize;
     }
 
     public int getAction() {
         return mAction;
-    }
-
-    void setAction(int action) {
-        mAction = action;
     }
 }

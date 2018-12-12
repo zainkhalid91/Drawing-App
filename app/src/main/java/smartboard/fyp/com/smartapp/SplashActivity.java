@@ -13,6 +13,7 @@ public class SplashActivity extends SplasherActivity {
     @Override
     public void initSplasher(SplasherConfig config) {
         config.setReveal_start(Const.START_CENTER)
+
                 //---------------
                 .setAnimationDuration(3000)
                 //---------------
@@ -20,6 +21,7 @@ public class SplashActivity extends SplasherActivity {
                 .setLogo_animation(Techniques.FadeIn)
                 .setAnimationLogoDuration(2000)
                 .setLogoWidth(600)
+
 
                 //---------------
                 .setTitle("Smart Board App")
@@ -35,11 +37,10 @@ public class SplashActivity extends SplasherActivity {
         // .setSubtitleTypeFace(Typeface.createFromAsset(getAssets(),"diana.otf"))
         //   .setTitleTypeFace(Typeface.createFromAsset(getAssets(),"stc.otf"));
 
-        //Example of custom view ..
-       /* config.setCustomView(R.layout.custom_view)
-                .setReveal_start(Const.START_CENTER)
-                .setAnimationDuration(5000);
-        getCustomView().findViewById(R.id.textView)*/
+        //Example of  view ..
+      /*  config.setCustomView(R.layout.custom_splash_activity)
+                .setAnimationDuration(3000);
+        getCustomView().findViewById(R.id.spin_kit);*/
 
     }
 

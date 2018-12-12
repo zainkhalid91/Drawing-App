@@ -38,9 +38,18 @@ public class PPTView extends AppCompatActivity {
 
 
         lv_ppt.setOnItemClickListener((adapterView, view, i, l) -> {
-            Intent intent = new Intent(getApplicationContext(), PPTActivity.class); /*change here*/
+            Intent intent = new Intent(getApplicationContext(), PPTActivity.class);
             intent.putExtra("position", i);
             startActivity(intent);
+
+          /*  Uri uri = Uri.fromFile(dir);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+                    if(dir.toString().contains(".ppt") || dir.toString().contains(".pptx")){
+                        intent.setDataAndType(uri, "application/vnd.ms-powerpoint");
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getApplicationContext().startActivity(intent);
+
+            }*/
 
             Log.e("Position", i + "");
         });

@@ -2,7 +2,6 @@ package com.raed.drawingview;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -12,50 +11,16 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.Typeface;
-import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.raed.drawingview.brushes.BrushSettings;
 import com.raed.drawingview.brushes.Brushes;
 
-import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import ja.burhanrashid52.photoeditor.MultiTouchListener;
-import ja.burhanrashid52.photoeditor.OnPhotoEditorListener;
-import ja.burhanrashid52.photoeditor.PhotoEditorView;
-import ja.burhanrashid52.photoeditor.ViewType;
-
 
 public class DrawingView extends View {
-
-
-    private static final String TAG = "PhotoEditor";
-    private LayoutInflater mLayoutInflater;
-    private Context context;
-    private PhotoEditorView parentView;
-    private ImageView imageView;
-    private View deleteView;
-
-    private List<View> addedViews;
-    private List<View> redoViews;
-    private OnPhotoEditorListener mOnPhotoEditorListener;
-    private boolean isTextPinchZoomable;
-    private Typeface mDefaultTextTypeface;
-    private Typeface mDefaultEmojiTypeface;
 
     private static final float MAX_SCALE = 5f;
     private static final float MIN_SCALE = 0.1f;
@@ -111,21 +76,6 @@ public class DrawingView extends View {
             }
     );
     private int mPointerId;
-    private boolean translateAction = true;
-
-    public DrawingView(Builder builder) {
-        super(builder.context);
-        this.context = builder.context;
-        this.parentView = builder.parentView;
-        this.imageView = builder.imageView;
-        this.deleteView = builder.deleteView;
-        this.isTextPinchZoomable = builder.isTextPinchZoomable;
-        this.mDefaultTextTypeface = builder.textTypeface;
-        this.mDefaultEmojiTypeface = builder.emojiTypeface;
-        mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        addedViews = new ArrayList<>();
-        redoViews = new ArrayList<>();
-    }
 
     public DrawingView(Context context) {
         this(context, null);
@@ -142,6 +92,8 @@ public class DrawingView extends View {
             initializeAttributes(attrs);
     }
 
+    private boolean translateAction = true;
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -156,6 +108,32 @@ public class DrawingView extends View {
             //this method should also call initializeDrawingBitmap
             setBackgroundImage(mBGBitmap);
         }
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int minDimension = (int) (250 * getResources().getDisplayMetrics().density);//150dp
+        int contentWidth = minDimension + getPaddingStart() + getPaddingEnd();
+        int contentHeight = minDimension + getPaddingTop() + getPaddingBottom();
+
+        int measuredWidth = resolveSize(contentWidth, widthMeasureSpec);
+        int measuredHeight = resolveSize(contentHeight, heightMeasureSpec);
+        setMeasuredDimension(measuredWidth, measuredHeight);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        super.onTouchEvent(event);
+        if (mZoomMode)
+            return handleZoomAndTransEvent(event);
+        if (event.getPointerCount() > 1)
+            return false;
+        float scaledX = (event.getX() - mDrawingTranslationX) / mScaleFactor;
+        float scaledY = (event.getY() - mDrawingTranslationY) / mScaleFactor;
+        event.setLocation(scaledX, scaledY);
+        mDrawingPerformer.onTouch(event);
+        invalidate();
+        return true;
     }
 
     @Override
@@ -186,32 +164,6 @@ public class DrawingView extends View {
             mDrawingPerformer.draw(canvas, mDrawingBitmap);
         else
             canvas.drawBitmap(mDrawingBitmap, 0, 0, null);
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int minDimension = (int) (250 * getResources().getDisplayMetrics().density);//150dp
-        int contentWidth = minDimension + getPaddingStart() + getPaddingEnd();
-        int contentHeight = minDimension + getPaddingTop() + getPaddingBottom();
-
-        int measuredWidth = resolveSize(contentWidth, widthMeasureSpec);
-        int measuredHeight = resolveSize(contentHeight, heightMeasureSpec);
-        setMeasuredDimension(measuredWidth, measuredHeight);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        super.onTouchEvent(event);
-        if (mZoomMode)
-            return handleZoomAndTransEvent(event);
-        if (event.getPointerCount() > 1)
-            return false;
-        float scaledX = (event.getX() - mDrawingTranslationX) / mScaleFactor;
-        float scaledY = (event.getY() - mDrawingTranslationY) / mScaleFactor;
-        event.setLocation(scaledX, scaledY);
-        mDrawingPerformer.onTouch(event);
-        invalidate();
-        return true;
     }
 
     public boolean handleZoomAndTransEvent(MotionEvent event) {
@@ -268,6 +220,11 @@ public class DrawingView extends View {
         return mDrawingBitmap;
     }
 
+    public void setDrawingBackground(int color) {
+        mBGColor = color;
+        invalidate();
+    }
+
     public void setUndoAndRedoEnable(boolean enabled) {
         if (enabled)
             mActionStack = new ActionStack();
@@ -278,7 +235,6 @@ public class DrawingView extends View {
     /**
      * Set an image as a background so you can draw on top of it. NOTE that calling this method is
      * going to clear anything drawn previously and you will not be able to restore anything with undo().
-     *
      * @param bitmap to be used as a background image.
      */
     public void setBackgroundImage(Bitmap bitmap) {
@@ -296,15 +252,6 @@ public class DrawingView extends View {
         }
         if (mActionStack != null) //if undo and redo is enabled, remove the old actions by creating a new instance.
             mActionStack = new ActionStack();
-        invalidate();
-    }
-
-    public int getDrawingBackground() {
-        return mBGColor;
-    }
-
-    public void setDrawingBackground(int color) {
-        mBGColor = color;
         invalidate();
     }
 
@@ -327,10 +274,13 @@ public class DrawingView extends View {
         animatorSet.start();
     }
 
+    public int getDrawingBackground() {
+        return mBGColor;
+    }
+
     /**
      * This method clears the drawing bitmap. If this method is called consecutively only the first
      * call will take effect.
-     *
      * @return true if the canvas cleared successfully.
      */
     public boolean clear() {
@@ -355,14 +305,6 @@ public class DrawingView extends View {
         return true;
     }
 
-    public boolean isCleared() {
-        return mCleared;
-    }
-
-    Brushes getBrushes() {
-        return mBrushes;
-    }
-
     public boolean undo() {
         if (mActionStack == null)
             throw new IllegalStateException("Undo functionality is disable you can enable it by calling setUndoAndRedoEnable(true)");
@@ -373,6 +315,14 @@ public class DrawingView extends View {
         mActionStack.addActionToRedoStack(oppositeAction);
         performAction(previousAction);
         return true;
+    }
+
+    public boolean isCleared() {
+        return mCleared;
+    }
+
+    Brushes getBrushes() {
+        return mBrushes;
     }
 
     public boolean redo() {
@@ -399,10 +349,21 @@ public class DrawingView extends View {
         return mActionStack.isRedoStackEmpty();
     }
 
+    private DrawingAction getOppositeAction(DrawingAction action) {
+        Rect rect = action.mRect;
+        Bitmap bitmap = Bitmap.createBitmap(
+                mDrawingBitmap,
+                rect.left,
+                rect.top,
+                rect.right - rect.left,
+                rect.bottom - rect.top
+        );
+        return new DrawingAction(bitmap, rect);
+    }
+
     /**
      * Return an instance of BrushSetting, you can use it to change the selected brush. And change
      * the size of the selected brush and the color.
-     *
      * @return an instance of BrushSetting associated with this DrawingView.
      */
     public BrushSettings getBrushSettings() {
@@ -412,7 +373,6 @@ public class DrawingView extends View {
     /**
      * Enter the zoom mode to be able to zoom and move the drawing. Note that you cannot enter
      * the zoom mode if the the user is drawing.
-     *
      * @return true if enter successfully, false otherwise.
      */
     public boolean enterZoomMode() {
@@ -476,18 +436,6 @@ public class DrawingView extends View {
                 mSrcPaint
         );
         invalidate();
-    }
-
-    private DrawingAction getOppositeAction(DrawingAction action) {
-        Rect rect = action.mRect;
-        Bitmap bitmap = Bitmap.createBitmap(
-                mDrawingBitmap,
-                rect.left,
-                rect.top,
-                rect.right - rect.left,
-                rect.bottom - rect.top
-        );
-        return new DrawingAction(bitmap, rect);
     }
 
     protected void checkBounds() {
@@ -595,16 +543,16 @@ public class DrawingView extends View {
         }
     }
 
+    public interface OnDrawListener {
+        void onDraw();
+    }
+
     private float getWidthWithoutPadding() {
         return getWidth() - getPaddingStart() - getPaddingEnd();
     }
 
     private float getHeightWithoutPadding() {
         return getHeight() - getPaddingTop() - getPaddingBottom();
-    }
-
-    public interface OnDrawListener {
-        void onDraw();
     }
 
     private class MyDrawingPerformerListener implements DrawingPerformer.DrawingPerformerListener {
@@ -641,247 +589,6 @@ public class DrawingView extends View {
             );
             DrawingAction action = new DrawingAction(bitmap, rect);
             mActionStack.addAction(action);
-        }
-    }
-
-
-    @SuppressLint("ClickableViewAccessibility")
-    public void addText(String text, final int colorCodeTextView) {
-        addText(null, text, colorCodeTextView);
-    }
-
-    /**
-     * This add the text on the {@link PhotoEditorView} with provided parameters
-     * by default {@link TextView#setText(int)} will be 18sp
-     *
-     * @param textTypeface      typeface for custom font in the text
-     * @param text              text to display
-     * @param colorCodeTextView text color to be displayed
-     */
-    @SuppressLint("ClickableViewAccessibility")
-    public void addText(@Nullable Typeface textTypeface, String text, final int colorCodeTextView) {
-        final View textRootView = getLayout(ViewType.TEXT);
-        final TextView textInputTv = textRootView.findViewById(R.id.tvPhotoEditorText);
-        final ImageView imgClose = textRootView.findViewById(R.id.imgPhotoEditorClose);
-        final FrameLayout frmBorder = textRootView.findViewById(R.id.frmBorder);
-
-        textInputTv.setText(text);
-        textInputTv.setTextColor(colorCodeTextView);
-        if (textTypeface != null) {
-            textInputTv.setTypeface(textTypeface);
-        }
-        MultiTouchListener multiTouchListener = getMultiTouchListener();
-        multiTouchListener.setOnGestureControl(new MultiTouchListener.OnGestureControl() {
-            @Override
-            public void onClick() {
-                boolean isBackgroundVisible = frmBorder.getTag() != null && (boolean) frmBorder.getTag();
-                frmBorder.setBackgroundResource(isBackgroundVisible ? 0 : ja.burhanrashid52.photoeditor.R.drawable.rounded_border_tv);
-                imgClose.setVisibility(isBackgroundVisible ? View.GONE : View.VISIBLE);
-                frmBorder.setTag(!isBackgroundVisible);
-            }
-
-            @Override
-            public void onLongClick() {
-                String textInput = textInputTv.getText().toString();
-                int currentTextColor = textInputTv.getCurrentTextColor();
-                if (mOnPhotoEditorListener != null) {
-                    mOnPhotoEditorListener.onEditTextChangeListener(textRootView, textInput, currentTextColor);
-                }
-            }
-        });
-
-        textRootView.setOnTouchListener(multiTouchListener);
-        addViewToParent(textRootView, ViewType.TEXT);
-    }
-
-    private void addViewToParent(View rootView, ViewType viewType) {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-        parentView.addView(rootView, params);
-        addedViews.add(rootView);
-        if (mOnPhotoEditorListener != null)
-            mOnPhotoEditorListener.onAddViewListener(viewType, addedViews.size());
-    }
-
-    private View getLayout(final ViewType viewType) {
-        View rootView = null;
-        switch (viewType) {
-            case TEXT:
-                rootView = mLayoutInflater.inflate(R.layout.view_photo_editor_text, null);
-                TextView txtText = rootView.findViewById(R.id.tvPhotoEditorText);
-                if (txtText != null && mDefaultTextTypeface != null) {
-                    txtText.setGravity(Gravity.CENTER);
-                    if (mDefaultEmojiTypeface != null) {
-                        txtText.setTypeface(mDefaultTextTypeface);
-                    }
-                }
-                break;
-            case IMAGE:
-                rootView = mLayoutInflater.inflate(R.layout.view_photo_editor_image, null);
-                break;
-            case EMOJI:
-                rootView = mLayoutInflater.inflate(R.layout.view_photo_editor_text, null);
-                TextView txtTextEmoji = rootView.findViewById(R.id.tvPhotoEditorText);
-                if (txtTextEmoji != null) {
-                    if (mDefaultEmojiTypeface != null) {
-                        txtTextEmoji.setTypeface(mDefaultEmojiTypeface);
-                    }
-                    txtTextEmoji.setGravity(Gravity.CENTER);
-                    txtTextEmoji.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-                }
-                break;
-        }
-
-        if (rootView != null) {
-            //We are setting tag as ViewType to identify what type of the view it is
-            //when we remove the view from stack i.e onRemoveViewListener(ViewType viewType, int numberOfAddedViews);
-            rootView.setTag(viewType);
-            final ImageView imgClose = rootView.findViewById(R.id.imgPhotoEditorClose);
-            final View finalRootView = rootView;
-            if (imgClose != null) {
-                imgClose.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        viewUndo(finalRootView, viewType);
-                    }
-                });
-            }
-        }
-        return rootView;
-    }
-
-
-    private void viewUndo(View removedView, ViewType viewType) {
-        if (addedViews.size() > 0) {
-            if (addedViews.contains(removedView)) {
-                parentView.removeView(removedView);
-                addedViews.remove(removedView);
-                redoViews.add(removedView);
-                if (mOnPhotoEditorListener != null) {
-                    mOnPhotoEditorListener.onRemoveViewListener(addedViews.size());
-                    mOnPhotoEditorListener.onRemoveViewListener(viewType, addedViews.size());
-                }
-            }
-        }
-    }
-
-
-    private MultiTouchListener getMultiTouchListener() {
-        MultiTouchListener multiTouchListener = new MultiTouchListener(
-                deleteView,
-                parentView,
-                this.imageView,
-                isTextPinchZoomable,
-                mOnPhotoEditorListener);
-
-        //multiTouchListener.setOnMultiTouchListener(this);
-
-        return multiTouchListener;
-    }
-
-
-    /**
-     * This will update text and color on provided view
-     *
-     * @param view      view on which you want update
-     * @param inputText text to update {@link TextView}
-     * @param colorCode color to update on {@link TextView}
-     */
-    public void editText(View view, String inputText, int colorCode) {
-        editText(view, null, inputText, colorCode);
-    }
-
-    /**
-     * This will update the text and color on provided view
-     *
-     * @param view         root view where text view is a child
-     * @param textTypeface update typeface for custom font in the text
-     * @param inputText    text to update {@link TextView}
-     * @param colorCode    color to update on {@link TextView}
-     */
-    public void editText(View view, Typeface textTypeface, String inputText, int colorCode) {
-        TextView inputTextView = view.findViewById(ja.burhanrashid52.photoeditor.R.id.tvPhotoEditorText);
-        if (inputTextView != null && addedViews.contains(view) && !TextUtils.isEmpty(inputText)) {
-            inputTextView.setText(inputText);
-            if (textTypeface != null) {
-                inputTextView.setTypeface(textTypeface);
-            }
-            inputTextView.setTextColor(colorCode);
-            parentView.updateViewLayout(view, view.getLayoutParams());
-            int i = addedViews.indexOf(view);
-            if (i > -1) addedViews.set(i, view);
-        }
-    }
-
-    public static class Builder {
-
-        private Context context;
-        private PhotoEditorView parentView;
-        private ImageView imageView;
-        private View deleteView;
-        private Typeface textTypeface;
-        private Typeface emojiTypeface;
-        //By Default pinch zoom on text is enabled
-        private boolean isTextPinchZoomable = true;
-
-        /**
-         * Building a PhotoEditor which requires a Context and PhotoEditorView
-         * which we have setup in our xml layout
-         *
-         * @param context         context
-         * @param photoEditorView {@link PhotoEditorView}
-         */
-        public Builder(Context context, PhotoEditorView photoEditorView) {
-            this.context = context;
-            parentView = photoEditorView;
-            imageView = photoEditorView.getSource();
-
-        }
-
-        Builder setDeleteView(View deleteView) {
-            this.deleteView = deleteView;
-            return this;
-        }
-
-        /**
-         * set default text font to be added on image
-         *
-         * @param textTypeface typeface for custom font
-         * @return {@link Builder} instant to build {@link DrawingView}
-         */
-        public Builder setDefaultTextTypeface(Typeface textTypeface) {
-            this.textTypeface = textTypeface;
-            return this;
-        }
-
-        /**
-         * set default font specific to add emojis
-         *
-         * @param emojiTypeface typeface for custom font
-         * @return {@link Builder} instant to build {@link DrawingView}
-         */
-        public Builder setDefaultEmojiTypeface(Typeface emojiTypeface) {
-            this.emojiTypeface = emojiTypeface;
-            return this;
-        }
-
-        /**
-         * set false to disable pinch to zoom on text insertion.By deafult its true
-         *
-         * @param isTextPinchZoomable flag to make pinch to zoom
-         * @return {@link Builder} instant to build {@link DrawingView}
-         */
-        public Builder setPinchTextScalable(boolean isTextPinchZoomable) {
-            this.isTextPinchZoomable = isTextPinchZoomable;
-            return this;
-        }
-
-        /**
-         * @return build PhotoEditor instance
-         */
-        public DrawingView build() {
-            return new DrawingView(this);
         }
     }
 }

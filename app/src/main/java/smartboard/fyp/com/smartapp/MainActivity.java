@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private BrushView brush_view;
     //Variables as objects
     private ImageView calligraphy, pen, airbrush, eraser, pencil;
-    private TextView current_size, resetZoom_tv;
+    private TextView current_size;
     private SeekBar size;
     private ImageView overflow_menu, save_menu, ppt_menu, pdf_menu, resetZoom_menu, clearCanvas_menu, exit_menu;
     private ImageView choose_color;
@@ -147,6 +147,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -157,8 +159,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent i = getIntent();
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(null);
+        getSupportActionBar().setTitle("Interactive Smart Board App");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         if (Build.VERSION.SDK_INT >= 21)
             getWindow().setStatusBarColor(darkenColor(getResources().getColor(R.color.colorPrimary)));
 
@@ -198,14 +201,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         clearCanvas_menu = findViewById(R.id.clearCanvas_menu);
         resetZoom_menu = findViewById(R.id.resetZoom_menu);
         exit_menu = findViewById(R.id.exitApp_menu);
-        overflow_menu.setOnClickListener(this);
+
+
+        /*overflow_menu.setOnClickListener(this);
         save_menu.setOnClickListener(this);
         ppt_menu.setOnClickListener(this);
         pdf_menu.setOnClickListener(this);
         resetZoom_menu.setOnClickListener(this);
         clearCanvas_menu.setOnClickListener(this);
         exit_menu.setOnClickListener(this);
-
+*/
 
         image_color_white = findViewById(R.id.image_color_white);
         image_color_light_brown = findViewById(R.id.image_color_light_brown);
@@ -230,8 +235,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ColorSelector();
 
 
-
-
         slidingUpPanelLayout = findViewById(R.id.slidingLayout);
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
@@ -243,6 +246,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
             }
         });
+
 
         //Initialize DrawingView
         drawing_view = findViewById(R.id.drawing_view);
@@ -281,7 +285,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         brush_view = findViewById(R.id.brush_view);
         brush_view.setDrawingView(drawing_view);
-
         settings = drawing_view.getBrushSettings();
 
         //color_preview_slide = findViewById(R.id.color_preview_slide);
@@ -402,12 +405,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        background_image.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                background_image_preview.setEnabled(b);
-                choose_background_image.setEnabled(b);
-            }
+        background_image.setOnCheckedChangeListener((compoundButton, b) -> {
+            background_image_preview.setEnabled(b);
+            choose_background_image.setEnabled(b);
         });
         choose_background_color.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -460,6 +460,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), PPTView.class);
                 startActivity(intent);
+            }
+        });
+
+        save_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bitmap b = drawing_view.exportDrawing();
+
+                File file = new File(Environment.getExternalStorageDirectory()
+                        + File.separator + ""
+                        + System.currentTimeMillis() + ".png");
+                if (file.exists()) file.delete();
+                try {
+                    file.createNewFile();
+
+                    FileOutputStream out = new FileOutputStream(file);
+                    b.compress(Bitmap.CompressFormat.PNG, IMAGE_COMPRESSION_QUALITY, out);
+                    out.flush();
+                    out.close();
+                } catch (Exception e) {
+                }
+
+                Intent i = new Intent();
+                i.putExtra(DRAWING_PATH, file.getAbsolutePath());
+
+                setResult(RESULT_OK, i);
+                Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -733,6 +760,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 settings.setSelectedBrush(Brushes.PEN);
                 settings.setSelectedBrushSize(size.getProgress() / 100.0f);
                 current_utility.setText(getString(R.string.pen));
+                current_size.setText(getString(R.string.current_size_) + " 25%");
+
 
                 break;
 
@@ -1151,6 +1180,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         view.setScaleX(1.5f);
         view.setScaleY(1.5f);
     }
-
-
 }

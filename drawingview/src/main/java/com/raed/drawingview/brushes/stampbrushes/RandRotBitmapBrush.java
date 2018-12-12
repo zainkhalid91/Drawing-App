@@ -6,9 +6,9 @@ import android.graphics.Canvas;
 
 public class RandRotBitmapBrush extends BitmapBrush {
 
-    private static final int RANDOM_ANGLES_NUMBER = 100;
     private static float sRandomAnglesArray[];
     private static int sRandomAnglesIndex = 0;
+    private static final int RANDOM_ANGLES_NUMBER = 100;
 
     static {
         sRandomAnglesArray = new float[RANDOM_ANGLES_NUMBER];

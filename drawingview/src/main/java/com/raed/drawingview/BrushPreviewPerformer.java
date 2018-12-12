@@ -46,6 +46,7 @@ class BrushPreviewPerformer {
 
     private Brush mBrush;//the currently selected brush
     private StampBrush mStampBrush;//the currently selected stamp brush if any
+
     //This works on the main thread but the preview drawing is divide into multiple tasks.
     //Drawing the preview curve immediately blocks the main thread.
     private Handler mHandler = new Handler(new Handler.Callback() {

@@ -18,7 +18,6 @@ public abstract class StampBrush extends Brush {
     }
 
     public abstract void drawFromTo(Canvas canvas, float lastDrawnPoint[], float x1, float y1);
-
     public abstract void drawPoint(Canvas canvas, float x, float y);
 
     @Override

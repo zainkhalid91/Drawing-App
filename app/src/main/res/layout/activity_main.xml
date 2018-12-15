@@ -12,11 +12,15 @@
     sothree:umanoShadowHeight="3dp"
     tools:context=".MainActivity">
 
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="false">
-        <include layout="@layout/toolbar" />
+
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/toolbar" />
 
 
         <com.raed.drawingview.DrawingView
@@ -27,6 +31,15 @@
             app:brush="pen"
             app:brush_color="#000"
             app:drawing_background_color="#ffff" />
+
+
+        <!-- <smartboard.fyp.com.smartapp.Multitouch
+             android:id="@+id/drawing"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:layout_below="@id/toolbar"
+             />-->
+
 
         <ImageView
             android:id="@+id/overflow_menu"

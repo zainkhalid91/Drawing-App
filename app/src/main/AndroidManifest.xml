@@ -26,6 +26,10 @@
         <activity android:name=".PdfActivity" />
         <activity android:name=".PPTView" />
         <activity android:name=".PPTActivity" />
+        <activity android:name=".RegistrationActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".MaterialActivity" />
+
     </application>
 
 </manifest>

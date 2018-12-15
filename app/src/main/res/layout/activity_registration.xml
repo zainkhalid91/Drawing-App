@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/register_maintext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="Sign Up"
+        android:textColor="@color/color_green"
+        android:textSize="25sp" />
+
+    <ImageView
+        android:id="@+id/register_imageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@id/register_maintext"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/usericon" />
+
+    <Button
+        android:id="@+id/upload_button"
+        android:layout_width="27dp"
+        android:layout_height="27dp"
+        android:layout_below="@id/register_imageView"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="5dp"
+        android:layout_toEndOf="@id/register_imageView"
+        android:background="@drawable/ic_edit_black_24dp" />
+
+    <EditText
+        android:id="@+id/register_systemid"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/upload_button"
+        android:layout_centerHorizontal="true"
+        android:hint="Enter System Id"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/register_fullname"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/register_systemid"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:hint="Full Name"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/register_email"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/register_fullname"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+
+        android:hint="Enter Email"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/register_password"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/register_email"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:hint="Enter Password"
+
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/register_btn"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:layout_below="@id/register_password"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/round_button"
+        android:text="Register"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/register_signin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/register_btn"
+        android:layout_centerHorizontal="true"
+        android:text="AlreadyRegistered? Sign In"
+        android:textSize="16sp" />
+
+</RelativeLayout>

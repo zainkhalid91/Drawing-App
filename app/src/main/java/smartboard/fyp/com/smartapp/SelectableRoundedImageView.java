@@ -26,14 +26,19 @@ import android.net.Uri;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.widget.ImageView;
+
 import smartboard.fyp.com.smartapp.R.styleable;
 
 
 public class SelectableRoundedImageView extends AppCompatImageView {
     public static final String TAG = "SelectableRoundedImageView";
     private int mResource;
-    private static final ScaleType[] sScaleTypeArray;
-    private ScaleType mScaleType;
+    private static final ImageView.ScaleType[] sScaleTypeArray;
+
+    static {
+        sScaleTypeArray = new ImageView.ScaleType[]{ImageView.ScaleType.MATRIX, ImageView.ScaleType.FIT_XY, ImageView.ScaleType.FIT_START, ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.FIT_END, ImageView.ScaleType.CENTER, ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.CENTER_INSIDE};
+    }
     private float mLeftTopCornerRadius;
     private float mRightTopCornerRadius;
     private float mLeftBottomCornerRadius;
@@ -45,10 +50,16 @@ public class SelectableRoundedImageView extends AppCompatImageView {
     private Drawable mDrawable;
     private float[] mRadii;
 
+    private ImageView.ScaleType mScaleType;
+
+    public SelectableRoundedImageView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
     public SelectableRoundedImageView(Context context) {
         super(context);
         this.mResource = 0;
-        this.mScaleType = ScaleType.FIT_CENTER;
+        this.mScaleType = ImageView.ScaleType.FIT_CENTER;
         this.mLeftTopCornerRadius = 0.0F;
         this.mRightTopCornerRadius = 0.0F;
         this.mLeftBottomCornerRadius = 0.0F;
@@ -59,14 +70,15 @@ public class SelectableRoundedImageView extends AppCompatImageView {
         this.mRadii = new float[]{0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F};
     }
 
-    public SelectableRoundedImageView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    protected void drawableStateChanged() {
+        super.drawableStateChanged();
+        this.invalidate();
     }
 
     public SelectableRoundedImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         this.mResource = 0;
-        this.mScaleType = ScaleType.FIT_CENTER;
+        this.mScaleType = ImageView.ScaleType.FIT_CENTER;
         this.mLeftTopCornerRadius = 0.0F;
         this.mRightTopCornerRadius = 0.0F;
         this.mLeftBottomCornerRadius = 0.0F;
@@ -105,19 +117,8 @@ public class SelectableRoundedImageView extends AppCompatImageView {
         }
     }
 
-    protected void drawableStateChanged() {
-        super.drawableStateChanged();
-        this.invalidate();
-    }
-
-    public ScaleType getScaleType() {
+    public ImageView.ScaleType getScaleType() {
         return this.mScaleType;
-    }
-
-    public void setScaleType(ScaleType scaleType) {
-        super.setScaleType(scaleType);
-        this.mScaleType = scaleType;
-        this.updateDrawable();
     }
 
     public void setImageDrawable(Drawable drawable) {
@@ -238,8 +239,10 @@ public class SelectableRoundedImageView extends AppCompatImageView {
         this.invalidate();
     }
 
-    static {
-        sScaleTypeArray = new ScaleType[]{ScaleType.MATRIX, ScaleType.FIT_XY, ScaleType.FIT_START, ScaleType.FIT_CENTER, ScaleType.FIT_END, ScaleType.CENTER, ScaleType.CENTER_CROP, ScaleType.CENTER_INSIDE};
+    public void setScaleType(ImageView.ScaleType scaleType) {
+        super.setScaleType(scaleType);
+        this.mScaleType = scaleType;
+        this.updateDrawable();
     }
 
     static class SelectableRoundedCornerDrawable extends Drawable {
@@ -258,13 +261,13 @@ public class SelectableRoundedImageView extends AppCompatImageView {
         private boolean mOval = false;
         private float mBorderWidth = 0.0F;
         private ColorStateList mBorderColor = ColorStateList.valueOf(-16777216);
-        private ScaleType mScaleType;
+        private ImageView.ScaleType mScaleType;
         private Path mPath;
         private Bitmap mBitmap;
         private boolean mBoundsConfigured;
 
         public SelectableRoundedCornerDrawable(Bitmap bitmap, Resources r) {
-            this.mScaleType = ScaleType.FIT_CENTER;
+            this.mScaleType = ImageView.ScaleType.FIT_CENTER;
             this.mPath = new Path();
             this.mBoundsConfigured = false;
             this.mBitmap = bitmap;
@@ -359,18 +362,18 @@ public class SelectableRoundedImageView extends AppCompatImageView {
         private void configureBounds(Canvas canvas) {
             Rect clipBounds = canvas.getClipBounds();
             Matrix canvasMatrix = canvas.getMatrix();
-            if (ScaleType.CENTER == this.mScaleType) {
+            if (ImageView.ScaleType.CENTER == this.mScaleType) {
                 this.mBounds.set(clipBounds);
-            } else if (ScaleType.CENTER_CROP == this.mScaleType) {
+            } else if (ImageView.ScaleType.CENTER_CROP == this.mScaleType) {
                 this.applyScaleToRadii(canvasMatrix);
                 this.mBounds.set(clipBounds);
-            } else if (ScaleType.FIT_XY == this.mScaleType) {
+            } else if (ImageView.ScaleType.FIT_XY == this.mScaleType) {
                 Matrix m = new Matrix();
                 m.setRectToRect(this.mBitmapRect, new RectF(clipBounds), ScaleToFit.FILL);
                 this.mBitmapShader.setLocalMatrix(m);
                 this.mBounds.set(clipBounds);
-            } else if (ScaleType.FIT_START != this.mScaleType && ScaleType.FIT_END != this.mScaleType && ScaleType.FIT_CENTER != this.mScaleType && ScaleType.CENTER_INSIDE != this.mScaleType) {
-                if (ScaleType.MATRIX == this.mScaleType) {
+            } else if (ImageView.ScaleType.FIT_START != this.mScaleType && ImageView.ScaleType.FIT_END != this.mScaleType && ImageView.ScaleType.FIT_CENTER != this.mScaleType && ImageView.ScaleType.CENTER_INSIDE != this.mScaleType) {
+                if (ImageView.ScaleType.MATRIX == this.mScaleType) {
                     this.applyScaleToRadii(canvasMatrix);
                     this.mBounds.set(this.mBitmapRect);
                 }
@@ -402,8 +405,8 @@ public class SelectableRoundedImageView extends AppCompatImageView {
             float newScaleX = this.mBounds.width() / (this.mBounds.width() + this.mBorderWidth + this.mBorderWidth);
             float newScaleY = this.mBounds.height() / (this.mBounds.height() + this.mBorderWidth + this.mBorderWidth);
             canvas.scale(newScaleX, newScaleY);
-            if (ScaleType.FIT_START != this.mScaleType && ScaleType.FIT_END != this.mScaleType && ScaleType.FIT_XY != this.mScaleType && ScaleType.FIT_CENTER != this.mScaleType && ScaleType.CENTER_INSIDE != this.mScaleType && ScaleType.MATRIX != this.mScaleType) {
-                if (ScaleType.CENTER == this.mScaleType || ScaleType.CENTER_CROP == this.mScaleType) {
+            if (ImageView.ScaleType.FIT_START != this.mScaleType && ImageView.ScaleType.FIT_END != this.mScaleType && ImageView.ScaleType.FIT_XY != this.mScaleType && ImageView.ScaleType.FIT_CENTER != this.mScaleType && ImageView.ScaleType.CENTER_INSIDE != this.mScaleType && ImageView.ScaleType.MATRIX != this.mScaleType) {
+                if (ImageView.ScaleType.CENTER == this.mScaleType || ImageView.ScaleType.CENTER_CROP == this.mScaleType) {
                     canvas.translate(-translateX / (newScaleX * scaleFactorX), -translateY / (newScaleY * scaleFactorY));
                     canvas.translate(-(this.mBounds.left - this.mBorderWidth), -(this.mBounds.top - this.mBorderWidth));
                 }
@@ -560,11 +563,11 @@ public class SelectableRoundedImageView extends AppCompatImageView {
             this.mOval = oval;
         }
 
-        public ScaleType getScaleType() {
+        public ImageView.ScaleType getScaleType() {
             return this.mScaleType;
         }
 
-        public void setScaleType(ScaleType scaleType) {
+        public void setScaleType(ImageView.ScaleType scaleType) {
             if (scaleType != null) {
                 this.mScaleType = scaleType;
             }

@@ -2,16 +2,20 @@
 <resources>
     <color name="colorPrimary">#21AC56</color>
     <color name="colorPrimaryDark">#21AC56</color>
-    <color name="colorAccent">#edc700</color>
+    <color name="colorAccent">#21AC56</color>
 
 
-    <color name="material_drawer_background">#2C2E3E</color>
-    <color name="material_drawer_user_background">#282a3c</color>
-    <color name="material_drawer_primary_text">#fff</color>
-    <color name="material_drawer_secondary_text">#fff</color>
-    <color name="material_drawer_primary_icon">#fff</color>
-    <color name="material_drawer_selected_text">#21AC56</color>
+    <!--    <color name="material_drawer_background">#2C2E3E</color>
+        <color name="material_drawer_user_background">#282a3c</color>
+        <color name="material_drawer_primary_text">#fff</color>
+        <color name="material_drawer_secondary_text">#fff</color>
+        <color name="material_drawer_primary_icon">#fff</color>
+        <color name="material_drawer_selected_text">#21AC56</color>-->
 
+
+    <!--Material Drawer colors-->
+    <color name="header_color">#da5e38</color>
+    <color name="base_color">#f4693e</color>
 
     <!--toolbar colors-->
     <color name="white">#fff</color>
@@ -20,8 +24,8 @@
     <color name="gray_dark">#808080</color>
 
     <!--FAB colors-->
-    <color name="colorFAB">#f4693e</color>
-    <color name="colorFAB1">#21AC56</color>
+    <color name="colorFAB">#21AC56</color>
+    <color name="colorFAB1">#f4693e</color>
     <color name="colorFAB2">#bbb</color>
     <color name="colorFAB3">#0086c2</color>
     <color name="colorFAB4">#ea6e2a</color>
@@ -54,6 +58,8 @@
     <color name="color_dark_grey">#696969</color>
     <color name="color_black">#000000</color>
 
+    <!--upload activity colors-->
+    <color name="backcolor">#3C83E7</color>
 
 </resources>
 

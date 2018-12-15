@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:text="Interactive Smart App"
+        android:textColor="@color/color_green"
+        android:textSize="25sp" />
+
+    <ImageView
+        android:id="@+id/logo_imge"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@id/text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/ic_splash_" />
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/logo_imge"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp">
+
+        <EditText
+            android:id="@+id/login_email"
+            android:layout_width="330dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:hint="Enter Email"
+            android:inputType="textEmailAddress" />
+
+        <EditText
+            android:id="@+id/login_password"
+            android:layout_width="330dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/login_email"
+            android:layout_centerHorizontal="true"
+            android:hint="Enter Password"
+            android:inputType="textPassword" />
+
+        <Button
+            android:id="@+id/login_btn"
+            android:layout_width="250dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/login_password"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/round_button"
+            android:text="Login"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/login_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/login_btn"
+            android:layout_centerHorizontal="true"
+            android:text="Not have an account? Sign up"
+            android:textSize="16sp" />
+    </RelativeLayout>
+</RelativeLayout>

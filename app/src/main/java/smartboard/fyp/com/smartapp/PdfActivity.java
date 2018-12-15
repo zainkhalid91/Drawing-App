@@ -1,6 +1,5 @@
 package smartboard.fyp.com.smartapp;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -31,7 +30,6 @@ public class PdfActivity extends AppCompatActivity implements OnPageChangeListen
     String pdfFileName;
     String TAG = "PdfActivity";
     int position = -1;
-    Context context;
     private ImageView screenShotImageView, imageView;
     private View main;
 

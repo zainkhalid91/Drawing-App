@@ -13,10 +13,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -69,9 +67,6 @@ import droidninja.filepicker.FilePickerConst;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static MainActivity activity;
     Toolbar toolbar;
-    TabLayout tabLayout;
-    ViewPager viewPager;
-    //TabItem tabProfile;
 
     /*FAB declaration*/
     private boolean isFabOpen = false;
@@ -88,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //Constants
     private final int IMAGE_COMPRESSION_QUALITY = 85;
     private final int REQ_WRITE_EXTERNAL_STORAGE = 1;
-    MyView myView;
+
     boolean flag = false;
     private Menu menu;
     private SlidingUpPanelLayout slidingUpPanelLayout;
@@ -104,8 +99,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private SeekBar size;
     private ImageView overflow_menu, save_menu, ppt_menu, pdf_menu, resetZoom_menu, clearCanvas_menu, exit_menu;
     private ImageView choose_color;
-
-
     private RadioButton background_color;
     private RadioButton background_image;
     private ImageView background_color_preview;
@@ -148,7 +141,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (Build.VERSION.SDK_INT >= 21)
-            getWindow().setStatusBarColor(darkenColor(getResources().getColor(R.color.colorPrimary)));
+            getWindow().setStatusBarColor(darkenColor(getResources().getColor(R.color.header_color)));
 
 
 
@@ -380,13 +372,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        if (getIntent().getIntExtra(DrawingActivityBuilder.DEFAULT_UTILITY, MainActivity.UTILITIY_PENCIL) == MainActivity.UTILITIY_ERASER)
+        if (getIntent().getIntExtra(DrawingActivityBuilder.DEFAULT_UTILITY, MainActivity.UTILITIY_PEN) == MainActivity.UTILITIY_ERASER)
             ;
-        if (getIntent().getIntExtra(DrawingActivityBuilder.DEFAULT_UTILITY, MainActivity.UTILITIY_PENCIL) == MainActivity.UTILITIY_AIR_BRUSH)
+        if (getIntent().getIntExtra(DrawingActivityBuilder.DEFAULT_UTILITY, MainActivity.UTILITIY_PEN) == MainActivity.UTILITIY_AIR_BRUSH)
             ;
-        if (getIntent().getIntExtra(DrawingActivityBuilder.DEFAULT_UTILITY, MainActivity.UTILITIY_PENCIL) == MainActivity.UTILITIY_CALLIGRAPHY)
+        if (getIntent().getIntExtra(DrawingActivityBuilder.DEFAULT_UTILITY, MainActivity.UTILITIY_PEN) == MainActivity.UTILITIY_CALLIGRAPHY)
             ;
-        if (getIntent().getIntExtra(DrawingActivityBuilder.DEFAULT_UTILITY, MainActivity.UTILITIY_PENCIL) == MainActivity.UTILITIY_PEN)
+        if (getIntent().getIntExtra(DrawingActivityBuilder.DEFAULT_UTILITY, MainActivity.UTILITIY_PEN) == MainActivity.UTILITIY_PENCIL)
             ;
 
         //Background
@@ -409,6 +401,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             background_image_preview.setEnabled(b);
             choose_background_image.setEnabled(b);
         });
+
         choose_background_color.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -505,7 +498,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.material_drawer_background));
+            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
         }
 
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
@@ -517,7 +510,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         header = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withTranslucentStatusBar(true)
-                .withHeaderBackground(R.color.material_drawer_user_background)
+                .withHeaderBackground(R.color.colorPrimary)
                 .addProfiles(profile)
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override
@@ -539,18 +532,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .withActionBarDrawerToggle(false)
                 .withSavedInstance(savedInstanceState)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withIcon(GoogleMaterial.Icon.gmd_settings).withName("Profile").withIdentifier(201),
-                        new PrimaryDrawerItem().withIcon(GoogleMaterial.Icon.gmd_settings).withName("Assignments").withIdentifier(202),
-                        new PrimaryDrawerItem().withIcon(GoogleMaterial.Icon.gmd_settings).withName("Quizes").withIdentifier(203),
-                        new PrimaryDrawerItem().withIcon(GoogleMaterial.Icon.gmd_settings).withName("Internal Evaluation").withIdentifier(204),
-                        new PrimaryDrawerItem().withIcon(GoogleMaterial.Icon.gmd_settings).withName("Attendence").withIdentifier(205),
-                        new PrimaryDrawerItem().withIcon(GoogleMaterial.Icon.gmd_settings).withName("abc").withIdentifier(206),
-                        new PrimaryDrawerItem().withIcon(GoogleMaterial.Icon.gmd_settings).withName("xyz").withIdentifier(207)
+                        new PrimaryDrawerItem().withIcon(GoogleMaterial.Icon.gmd_settings).withName("Update Semesters").withIdentifier(201),
+                        new PrimaryDrawerItem().withIcon(GoogleMaterial.Icon.gmd_settings).withName("Upload Files").withIdentifier(202)
                 ).withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     if (drawerItem instanceof Nameable) {
-                        if (drawerItem.getIdentifier() == 207) {
-                            /*Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
-                            startActivity(intent);*/
+                        if (drawerItem.getIdentifier() == 202) {
+                            Intent intent = new Intent(getApplicationContext(), MaterialActivity.class);
+                            startActivity(intent);
                         }
                     }
                     return false;
@@ -778,7 +766,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.fab4:
                 if (flag) {
-
+                    Log.d("zoom", "Fab 4");
                     drawing_view.isInZoomMode();
                     drawing_view.exitZoomMode();
                     fab4.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_zoom_in));

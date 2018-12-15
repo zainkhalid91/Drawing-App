@@ -22,6 +22,7 @@ import com.raed.drawingview.brushes.Brushes;
 
 public class DrawingView extends View {
 
+
     private static final float MAX_SCALE = 5f;
     private static final float MIN_SCALE = 0.1f;
 
@@ -124,6 +125,8 @@ public class DrawingView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
+        final int action = event.getAction();
+
         if (mZoomMode)
             return handleZoomAndTransEvent(event);
         if (event.getPointerCount() > 1)

@@ -37,6 +37,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -118,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             image_color_light_blue, image_color_dark_blue, image_color_purle, image_color_dark_grey;
     private RelativeLayout menuLayout;
     private Drawer result = null;
+    private FirebaseAuth auth;
 
     public static MainActivity getInstance() {
         if (activity == null) {
@@ -158,6 +160,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             getWindow().setStatusBarColor(darkenColor(getResources().getColor(R.color.header_color)));
 
 
+        /*FireBase auth*/
+        auth = FirebaseAuth.getInstance();
 
          /*tabLayout = findViewById(R.id.tablayout);
         tabProfile = findViewById(R.id.tab_Profile);
@@ -457,19 +461,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         save_menu.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
                 Bitmap b = drawing_view.exportDrawing();
 
                 File file = new File(Environment.getExternalStorageDirectory()
                         + File.separator + ""
-                        + System.currentTimeMillis() + ".png");
+                        + System.currentTimeMillis() + ".jpg");
                 if (file.exists()) file.delete();
                 try {
                     file.createNewFile();
 
                     FileOutputStream out = new FileOutputStream(file);
-                    b.compress(Bitmap.CompressFormat.PNG, IMAGE_COMPRESSION_QUALITY, out);
+                    b.compress(Bitmap.CompressFormat.JPEG, IMAGE_COMPRESSION_QUALITY, out);
                     out.flush();
                     out.close();
                 } catch (Exception e) {
@@ -480,6 +485,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 setResult(RESULT_OK, i);
                 Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_SHORT).show();
+                menuLayout.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -532,15 +538,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .withActionBarDrawerToggle(false)
                 .withSavedInstance(savedInstanceState)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withIcon(GoogleMaterial.Icon.gmd_settings).withName("Update Semesters").withIdentifier(201),
-                        new PrimaryDrawerItem().withIcon(GoogleMaterial.Icon.gmd_settings).withName("Upload Files").withIdentifier(202)
+                        new PrimaryDrawerItem().withIcon(GoogleMaterial.Icon.gmd_book).withName("Update Semesters").withIdentifier(201),
+                        new PrimaryDrawerItem().withIcon(GoogleMaterial.Icon.gmd_cloud_upload).withName("Upload Files").withIdentifier(202),
+                        new PrimaryDrawerItem().withIcon(GoogleMaterial.Icon.gmd_exit_to_app).withName("Sign Out").withIdentifier(203)
                 ).withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     if (drawerItem instanceof Nameable) {
                         if (drawerItem.getIdentifier() == 202) {
                             Intent intent = new Intent(getApplicationContext(), MaterialActivity.class);
                             startActivity(intent);
                         }
+                        if (drawerItem.getIdentifier() == 203) {
+                            auth.signOut();
+                            if (auth.getCurrentUser() == null) {
+                                startActivity(new Intent(this, LoginActivity.class));
+                                finish();
+                            }
+                        }
                     }
+
                     return false;
                 })
                 .build();
@@ -593,6 +608,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
+
     private void clear() {
         AlertDialog d = new AlertDialog.Builder(this)
                 .setTitle(R.string.drawing)
@@ -623,6 +639,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .enableVideoPicker(false)
                 .pickPhoto(MainActivity.this);
     }
+
 
     private void finishWarning() {
         if (!drawing_view.isUndoStackEmpty()) {

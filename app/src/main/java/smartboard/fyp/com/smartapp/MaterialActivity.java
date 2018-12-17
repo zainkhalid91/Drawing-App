@@ -26,7 +26,6 @@ import java.io.File;
 
 public class MaterialActivity extends AppCompatActivity {
 
-    private final static int FILE_SELECT_CODE = 1;
     private Button mSelectFile;
     private Button mPause;
     private Button mCancel;
@@ -34,8 +33,12 @@ public class MaterialActivity extends AppCompatActivity {
     private TextView mFileNameLable;
     private TextView mSizeLable;
     private TextView mProgressLable;
+
     private StorageReference mStorageRef;
+
     private StorageTask mStoragetask;
+
+    private final static int FILE_SELECT_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +71,11 @@ public class MaterialActivity extends AppCompatActivity {
                 String btnText = mPause.getText().toString();
 
                 if (btnText.equals("Pause Upload")) {
+                    try {
+                        Toast.makeText(getApplicationContext(), "Please select a file first", Toast.LENGTH_SHORT).show();
+                    } catch (Exception ex) {
 
+                    }
                     mStoragetask.pause();
                     mPause.setText("Resume Upload");
 
@@ -83,6 +90,11 @@ public class MaterialActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mStoragetask.cancel();
+                try {
+                    Toast.makeText(getApplicationContext(), "Please select a file first", Toast.LENGTH_SHORT).show();
+                } catch (Exception ex) {
+
+                }
                 startActivity(new Intent(MaterialActivity.this, MaterialActivity.class));
 
             }
@@ -135,8 +147,7 @@ public class MaterialActivity extends AppCompatActivity {
             }
 
             mFileNameLable.setText(displayName);
-
-
+            final String fileName = System.currentTimeMillis() + ".pdf";
             StorageReference riversRef = mStorageRef.child("files/" + displayName);
 
             mStoragetask = riversRef.putFile(fileUri)

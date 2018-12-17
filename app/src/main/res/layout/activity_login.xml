@@ -41,6 +41,7 @@
             android:inputType="textEmailAddress" />
 
         <EditText
+            android:layout_marginTop="5dp"
             android:id="@+id/login_password"
             android:layout_width="330dp"
             android:layout_height="wrap_content"

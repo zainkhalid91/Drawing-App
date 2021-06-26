@@ -5,14 +5,15 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public class PdfViewer extends AppCompatActivity {
     }
 
     public ArrayList<File> getfile(File dir) {
-        File listFile[] = dir.listFiles();
+        File[] listFile = dir.listFiles();
         if (listFile != null && listFile.length > 0) {
             for (int i = 0; i < listFile.length; i++) {
 

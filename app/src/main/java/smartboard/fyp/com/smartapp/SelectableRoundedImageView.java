@@ -23,10 +23,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
-import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ImageView;
+
+import androidx.appcompat.widget.AppCompatImageView;
 
 import smartboard.fyp.com.smartapp.R.styleable;
 
@@ -248,22 +249,22 @@ public class SelectableRoundedImageView extends AppCompatImageView {
     static class SelectableRoundedCornerDrawable extends Drawable {
         private static final String TAG = "SelectableRoundedCornerDrawable";
         private static final int DEFAULT_BORDER_COLOR = -16777216;
-        private RectF mBounds = new RectF();
-        private RectF mBorderBounds = new RectF();
+        private final RectF mBounds = new RectF();
+        private final RectF mBorderBounds = new RectF();
         private final RectF mBitmapRect = new RectF();
         private final int mBitmapWidth;
         private final int mBitmapHeight;
         private final Paint mBitmapPaint;
         private final Paint mBorderPaint;
-        private BitmapShader mBitmapShader;
-        private float[] mRadii = new float[]{0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F};
-        private float[] mBorderRadii = new float[]{0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F};
+        private final BitmapShader mBitmapShader;
+        private final float[] mRadii = new float[]{0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F};
+        private final float[] mBorderRadii = new float[]{0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F};
         private boolean mOval = false;
         private float mBorderWidth = 0.0F;
         private ColorStateList mBorderColor = ColorStateList.valueOf(-16777216);
         private ImageView.ScaleType mScaleType;
-        private Path mPath;
-        private Bitmap mBitmap;
+        private final Path mPath;
+        private final Bitmap mBitmap;
         private boolean mBoundsConfigured;
 
         public SelectableRoundedCornerDrawable(Bitmap bitmap, Resources r) {

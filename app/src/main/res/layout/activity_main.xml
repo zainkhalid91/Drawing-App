@@ -62,7 +62,7 @@
             android:visibility="invisible" />
 
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
             app:pressedTranslationZ="12dp" />
 
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -92,7 +92,7 @@
             app:fabSize="normal"
             app:pressedTranslationZ="12dp" />
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -107,7 +107,7 @@
             app:fabSize="normal"
             app:pressedTranslationZ="12dp" />
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -122,7 +122,7 @@
             app:fabSize="normal"
             app:pressedTranslationZ="12dp" />
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

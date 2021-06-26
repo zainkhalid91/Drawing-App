@@ -46,7 +46,7 @@ public class SplashActivity extends SplasherActivity {
 
     @Override
     public void onSplasherFinished() {
-        Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
     }

@@ -11,13 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -37,6 +30,14 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -310,7 +311,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 settings.setSelectedBrushSize(i / 100.0f);
-                current_size.setText(String.format("%s %s%%", getResources().getString(R.string.current_size_), String.valueOf(i)));
+                current_size.setText(String.format("%s %s%%", getResources().getString(R.string.current_size_), i));
             }
 
             @Override
@@ -406,87 +407,65 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             choose_background_image.setEnabled(b);
         });
 
-        choose_background_color.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                color_picker = new ColorPickerDialog(MainActivity.this, current_background_color);
-                color_picker.setAlphaSliderVisible(false);
-                color_picker.setHexValueEnabled(true);
-                color_picker.setOnColorChangedListener(new ColorPickerDialog.OnColorChangedListener() {
-                    @Override
-                    public void onColorChanged(int color) {
-                        current_background_color = color;
-                        background_color_preview.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
-                        drawing_view.setDrawingBackground(color);
-                        slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                    }
-                });
-                color_picker.show();
-            }
-        });
-
-        choose_background_image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    chooseBackgroundImage();
-                } else {
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_WRITE_EXTERNAL_STORAGE);
+        choose_background_color.setOnClickListener(view -> {
+            color_picker = new ColorPickerDialog(MainActivity.this, current_background_color);
+            color_picker.setAlphaSliderVisible(false);
+            color_picker.setHexValueEnabled(true);
+            color_picker.setOnColorChangedListener(new ColorPickerDialog.OnColorChangedListener() {
+                @Override
+                public void onColorChanged(int color) {
+                    current_background_color = color;
+                    background_color_preview.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
+                    drawing_view.setDrawingBackground(color);
+                    slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                 }
+            });
+            color_picker.show();
+        });
+
+        choose_background_image.setOnClickListener(view -> {
+            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                chooseBackgroundImage();
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_WRITE_EXTERNAL_STORAGE);
             }
         });
 
-        clearCanvas_menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                clear();
-                menuLayout.setVisibility(View.INVISIBLE);
-            }
+        clearCanvas_menu.setOnClickListener(view -> {
+            clear();
+            menuLayout.setVisibility(View.INVISIBLE);
         });
 
-        pdf_menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), PdfViewer.class);
-                startActivity(intent);
-            }
+        pdf_menu.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(), PdfViewer.class);
+            startActivity(intent);
         });
 
-        ppt_menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), PPTView.class);
-                startActivity(intent);
+        ppt_menu.setOnClickListener(view -> Toast.makeText(MainActivity.this, "PPT", Toast.LENGTH_SHORT).show());
+
+        save_menu.setOnClickListener(view -> {
+            Bitmap b = drawing_view.exportDrawing();
+
+            File file = new File(Environment.getExternalStorageDirectory()
+                    + File.separator + ""
+                    + System.currentTimeMillis() + ".jpg");
+            if (file.exists()) file.delete();
+            try {
+                file.createNewFile();
+
+                FileOutputStream out = new FileOutputStream(file);
+                b.compress(Bitmap.CompressFormat.JPEG, IMAGE_COMPRESSION_QUALITY, out);
+                out.flush();
+                out.close();
+            } catch (Exception e) {
             }
-        });
 
-        save_menu.setOnClickListener(new View.OnClickListener() {
+            Intent i1 = new Intent();
+            i1.putExtra(DRAWING_PATH, file.getAbsolutePath());
 
-            @Override
-            public void onClick(View view) {
-                Bitmap b = drawing_view.exportDrawing();
-
-                File file = new File(Environment.getExternalStorageDirectory()
-                        + File.separator + ""
-                        + System.currentTimeMillis() + ".jpg");
-                if (file.exists()) file.delete();
-                try {
-                    file.createNewFile();
-
-                    FileOutputStream out = new FileOutputStream(file);
-                    b.compress(Bitmap.CompressFormat.JPEG, IMAGE_COMPRESSION_QUALITY, out);
-                    out.flush();
-                    out.close();
-                } catch (Exception e) {
-                }
-
-                Intent i = new Intent();
-                i.putExtra(DRAWING_PATH, file.getAbsolutePath());
-
-                setResult(RESULT_OK, i);
-                Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_SHORT).show();
-                menuLayout.setVisibility(View.INVISIBLE);
-            }
+            setResult(RESULT_OK, i1);
+            Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_SHORT).show();
+            menuLayout.setVisibility(View.INVISIBLE);
         });
 
         //Show toast
@@ -518,14 +497,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .withTranslucentStatusBar(true)
                 .withHeaderBackground(R.color.colorPrimary)
                 .addProfiles(profile)
-                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
-                    @Override
-                    public boolean onProfileChanged(View view, IProfile profile, boolean current) {
-                        if (profile instanceof IDrawerItem && profile.getIdentifier() == 100000) {
-                            int count = 100 + header.getProfiles().size() + 1;
-                        }
-                        return false;
+                .withOnAccountHeaderListener((view, profile1, current) -> {
+                    if (profile1 instanceof IDrawerItem && profile1.getIdentifier() == 100000) {
+                        int count = 100 + header.getProfiles().size() + 1;
                     }
+                    return false;
                 })
                 .withSavedInstance(savedInstanceState)
                 .build();
@@ -842,277 +818,208 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void ColorSelector() {
-        image_color_white.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // int color = ResourcesCompat.getColor(getResources(), R.color.color_black,null);
+        image_color_white.setOnClickListener(view -> {
+            // int color = ResourcesCompat.getColor(getResources(), R.color.color_black,null);
 
-                color_preview.setColorFilter(-1, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-1);
-                scaleColorView(image_color_white);
+            color_preview.setColorFilter(-1, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-1);
+            scaleColorView(image_color_white);
 
 
-            }
         });
 
-        image_color_light_brown.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_light_brown.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-3366510, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-3366510);
-                scaleColorView(image_color_light_brown);
+            color_preview.setColorFilter(-3366510, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-3366510);
+            scaleColorView(image_color_light_brown);
 
 
-            }
         });
 
 
-        image_color_brown.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_brown.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-7508381, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-7508381);
-                scaleColorView(image_color_brown);
+            color_preview.setColorFilter(-7508381, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-7508381);
+            scaleColorView(image_color_brown);
 
-            }
         });
 
-        image_color_dark_brown.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_dark_brown.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-8695228, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-8695228);
-                scaleColorView(image_color_dark_brown);
+            color_preview.setColorFilter(-8695228, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-8695228);
+            scaleColorView(image_color_dark_brown);
 
-            }
         });
 
-        image_color_light_pink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_light_pink.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-21290, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-21290);
-                scaleColorView(image_color_light_pink);
+            color_preview.setColorFilter(-21290, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-21290);
+            scaleColorView(image_color_light_pink);
 
 
-            }
         });
 
-        image_color_pink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_pink.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-383334, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-383334);
-                scaleColorView(image_color_pink);
+            color_preview.setColorFilter(-383334, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-383334);
+            scaleColorView(image_color_pink);
 
 
-            }
         });
 
-        image_color_red.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_red.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-1233362, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-1233362);
-                scaleColorView(image_color_red);
+            color_preview.setColorFilter(-1233362, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-1233362);
+            scaleColorView(image_color_red);
 
 
-            }
         });
-        image_color_dark_red.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_dark_red.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-5823966, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-5823966);
-                scaleColorView(image_color_dark_red);
+            color_preview.setColorFilter(-5823966, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-5823966);
+            scaleColorView(image_color_dark_red);
 
 
-            }
         });
 
-        image_color_light_orange.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_light_orange.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-151479, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-151479);
-                scaleColorView(image_color_light_orange);
+            color_preview.setColorFilter(-151479, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-151479);
+            scaleColorView(image_color_light_orange);
 
 
-            }
         });
 
-        image_color_orange.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_orange.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-759490, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-759490);
-                scaleColorView(image_color_orange);
+            color_preview.setColorFilter(-759490, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-759490);
+            scaleColorView(image_color_orange);
 
 
-            }
         });
 
-        image_color_yellow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_yellow.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-4853, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-4853);
-                scaleColorView(image_color_yellow);
+            color_preview.setColorFilter(-4853, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-4853);
+            scaleColorView(image_color_yellow);
 
 
-            }
         });
 
-        image_color_light_green.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_light_green.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-14427564, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-14427564);
-                scaleColorView(image_color_light_green);
+            color_preview.setColorFilter(-14427564, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-14427564);
+            scaleColorView(image_color_light_green);
 
 
-            }
         });
 
-        image_color_green.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_green.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-14442665, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-14442665);
-                scaleColorView(image_color_green);
+            color_preview.setColorFilter(-14442665, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-14442665);
+            scaleColorView(image_color_green);
 
 
-            }
         });
 
-        image_color_dark_green.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_dark_green.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-16619989, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-16619989);
-                scaleColorView(image_color_dark_green);
+            color_preview.setColorFilter(-16619989, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-16619989);
+            scaleColorView(image_color_dark_green);
 
 
-            }
         });
 
-        image_color_light_blue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_light_blue.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-16731649, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-16731649);
-                scaleColorView(image_color_light_blue);
+            color_preview.setColorFilter(-16731649, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-16731649);
+            scaleColorView(image_color_light_blue);
 
 
-            }
         });
 
-        image_color_blue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_blue.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-16742718, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-16742718);
-                scaleColorView(image_color_blue);
+            color_preview.setColorFilter(-16742718, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-16742718);
+            scaleColorView(image_color_blue);
 
 
-            }
         });
 
-        image_color_dark_blue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_dark_blue.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-16754818, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-16754818);
-                scaleColorView(image_color_dark_blue);
+            color_preview.setColorFilter(-16754818, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-16754818);
+            scaleColorView(image_color_dark_blue);
 
 
-            }
         });
 
-        image_color_purle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_purle.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-9959524, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-9959524);
-                scaleColorView(image_color_purle);
+            color_preview.setColorFilter(-9959524, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-9959524);
+            scaleColorView(image_color_purle);
 
 
-            }
         });
-        image_color_dark_grey.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_dark_grey.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-9868951, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-9868951);
-                scaleColorView(image_color_dark_grey);
+            color_preview.setColorFilter(-9868951, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-9868951);
+            scaleColorView(image_color_dark_grey);
 
 
-            }
         });
 
-        image_color_black.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        image_color_black.setOnClickListener(view -> {
 
-                color_preview.setColorFilter(-16777216, android.graphics.PorterDuff.Mode.SRC_IN);
-                settings.setColor(-16777216);
-                scaleColorView(image_color_black);
+            color_preview.setColorFilter(-16777216, android.graphics.PorterDuff.Mode.SRC_IN);
+            settings.setColor(-16777216);
+            scaleColorView(image_color_black);
 
 
-            }
         });
 
-        overflow_menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (flag) {
-                    menuLayout.setVisibility(RelativeLayout.VISIBLE);
-                    // menuLayout.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in));
-                    flag = false;
-                } else if (!flag) {
-                    menuLayout.setVisibility(RelativeLayout.INVISIBLE);
-                    // menuLayout.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out ));
-                    flag = true;
-
-                }
-
+        overflow_menu.setOnClickListener(view -> {
+            if (flag) {
+                menuLayout.setVisibility(RelativeLayout.VISIBLE);
+                // menuLayout.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in));
+                flag = false;
+            } else if (!flag) {
+                menuLayout.setVisibility(RelativeLayout.INVISIBLE);
+                // menuLayout.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out ));
+                flag = true;
 
             }
+
+
         });
 
-        exit_menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                System.exit(0);
-            }
+        exit_menu.setOnClickListener(view -> {
+            finish();
+            System.exit(0);
         });
 
-        resetZoom_menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawing_view.resetZoom();
-                drawing_view.exitZoomMode();
-                menuLayout.setVisibility(View.INVISIBLE);
-            }
+        resetZoom_menu.setOnClickListener(view -> {
+            drawing_view.resetZoom();
+            drawing_view.exitZoomMode();
+            menuLayout.setVisibility(View.INVISIBLE);
         });
     }
 

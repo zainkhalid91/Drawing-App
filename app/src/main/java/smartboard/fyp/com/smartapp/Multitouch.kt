@@ -1,234 +1,208 @@
-package smartboard.fyp.com.smartapp;
+package smartboard.fyp.com.smartapp
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.util.AttributeSet;
-import android.util.Pair;
-import android.view.MotionEvent;
-import android.view.View;
+import android.content.Context
+import android.graphics.*
+import android.util.AttributeSet
+import android.util.Pair
+import android.view.MotionEvent
+import android.view.View
+import java.util.*
 
-import java.util.ArrayList;
-
-public class Multitouch extends View {
-    private static final float TOUCH_TOLERANCE = 4;
-
-
-    //   private Path            m_Path;
-    private static final int INVALID_POINTER_ID = -1;
-    int current_path_count = -1;
-    ArrayList<Path> m_Path_list = new ArrayList<Path>();
-    ArrayList<Float> mX_list = new ArrayList<Float>();
-    ArrayList<Float> mY_list = new ArrayList<Float>();
-    ArrayList<Integer> mActivePointerId_list = new ArrayList<Integer>();
-    ArrayList<Pair<Path, Paint>> arrayListPaths = new ArrayList<Pair<Path, Paint>>();
+class Multitouch : View {
+    var current_path_count = -1
+    var m_Path_list = ArrayList<Path>()
+    var mX_list = ArrayList<Float>()
+    var mY_list = ArrayList<Float>()
+    var mActivePointerId_list = ArrayList<Int>()
+    var arrayListPaths = ArrayList<Pair<Path, Paint>>()
 
     //ArrayList<Pair<Path, Paint>> undonePaths = new ArrayList<Pair<Path, Paint>>();
-    private Canvas m_Canvas;
-    private Paint m_Paint;
-    private float mX, mY;
-    private Bitmap bitmapToCanvas;
+    private var m_Canvas: Canvas? = null
+    private var m_Paint: Paint? = null
+    private val mX = 0f
+    private val mY = 0f
+    private lateinit var bitmapToCanvas: Bitmap
+
     // The ‘active pointer’ is the one currently moving our object.
-    private int mActivePointerId = INVALID_POINTER_ID;
+    private var mActivePointerId = INVALID_POINTER_ID
 
-    public Multitouch(Context context) {
-        super(context);
-        setFocusable(true);
-        setFocusableInTouchMode(true);
-
-        onCanvasInitialization();
+    constructor(context: Context?) : super(context) {
+        isFocusable = true
+        isFocusableInTouchMode = true
+        onCanvasInitialization()
     }
 
-    public Multitouch(Context context, AttributeSet attributeSet) {
-        super(context, attributeSet);
-        setFocusable(true);
-        setFocusableInTouchMode(true);
-
-        onCanvasInitialization();
+    constructor(context: Context?, attributeSet: AttributeSet?) : super(context, attributeSet) {
+        isFocusable = true
+        isFocusableInTouchMode = true
+        onCanvasInitialization()
     }
 
-    public void onCanvasInitialization() {
-        m_Paint = new Paint();
-        m_Paint.setAntiAlias(true);
-        m_Paint.setDither(true);
-        m_Paint.setColor(Color.parseColor("#37A1D1"));
-        m_Paint.setStyle(Paint.Style.STROKE);
-        m_Paint.setStrokeJoin(Paint.Join.ROUND);
-        m_Paint.setStrokeCap(Paint.Cap.ROUND);
-        m_Paint.setStrokeWidth(2);
+    fun onCanvasInitialization() {
+        m_Paint = Paint()
+        m_Paint!!.isAntiAlias = true
+        m_Paint!!.isDither = true
+        m_Paint!!.color = Color.parseColor("#37A1D1")
+        m_Paint!!.style = Paint.Style.STROKE
+        m_Paint!!.strokeJoin = Paint.Join.ROUND
+        m_Paint!!.strokeCap = Paint.Cap.ROUND
+        m_Paint!!.strokeWidth = 2f
 
         //   m_Path = new Path();
     }
 
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-
-        bitmapToCanvas = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        m_Canvas = new Canvas(bitmapToCanvas);
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        bitmapToCanvas = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        m_Canvas = Canvas(bitmapToCanvas)
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
+    override fun onDraw(canvas: Canvas) {
         try {
-            canvas.drawBitmap(bitmapToCanvas, 0f, 0f, null);
-            for (int i = 0; i <= current_path_count; i++) {
-                canvas.drawPath(m_Path_list.get(i), m_Paint);
+            canvas.drawBitmap(bitmapToCanvas, 0f, 0f, null)
+            for (i in 0..current_path_count) {
+                canvas.drawPath(m_Path_list[i], m_Paint!!)
             }
-        } catch (Exception e) {
-
+        } catch (e: Exception) {
         }
     }
 
-    public void onDrawCanvas() {
-        for (Pair<Path, Paint> p : arrayListPaths) {
-            m_Canvas.drawPath(p.first, p.second);
+    fun onDrawCanvas() {
+        for (p in arrayListPaths) {
+            m_Canvas!!.drawPath(p.first, p.second)
         }
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        super.onTouchEvent(event);
-
-        final int action = event.getAction();
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        super.onTouchEvent(event)
+        val action = event.action
         try {
-            switch (action & MotionEvent.ACTION_MASK) {
-                case MotionEvent.ACTION_DOWN: {
-                    float x = event.getX();
-                    float y = event.getY();
-
-
-                    current_path_count = 0;
-                    mActivePointerId_list.add(event.getPointerId(0), current_path_count);
-                    touch_start((x), (y), current_path_count);
+            when (action and MotionEvent.ACTION_MASK) {
+                MotionEvent.ACTION_DOWN -> {
+                    val x = event.x
+                    val y = event.y
+                    current_path_count = 0
+                    mActivePointerId_list.add(event.getPointerId(0), current_path_count)
+                    touch_start(x, y, current_path_count)
                 }
-                break;
-
-                case MotionEvent.ACTION_POINTER_DOWN: {
-
-                    if (event.getPointerCount() > current_path_count) {
-
-                        current_path_count++;
-                        float x = event.getX(current_path_count);
-                        float y = event.getY(current_path_count);
-
-
-                        mActivePointerId_list.add(event.getPointerId(current_path_count), current_path_count);
-                        touch_start((x), (y), current_path_count);
+                MotionEvent.ACTION_POINTER_DOWN -> {
+                    if (event.pointerCount > current_path_count) {
+                        current_path_count++
+                        val x = event.getX(current_path_count)
+                        val y = event.getY(current_path_count)
+                        mActivePointerId_list.add(
+                            event.getPointerId(current_path_count),
+                            current_path_count
+                        )
+                        touch_start(x, y, current_path_count)
                     }
                 }
-                break;
-
-                case MotionEvent.ACTION_MOVE: {
-                    for (int i = 0; i <= current_path_count; i++) {
+                MotionEvent.ACTION_MOVE -> {
+                    var i = 0
+                    while (i <= current_path_count) {
                         try {
-                            int pointerIndex = event
-                                    .findPointerIndex(mActivePointerId_list.get(i));
-
-                            float x = event.getX(pointerIndex);
-                            float y = event.getY(pointerIndex);
-
-                            touch_move((x), (y), i);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                            val pointerIndex = event
+                                .findPointerIndex(mActivePointerId_list[i])
+                            val x = event.getX(pointerIndex)
+                            val y = event.getY(pointerIndex)
+                            touch_move(x, y, i)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
+                        i++
                     }
-
-
                 }
-                break;
+                MotionEvent.ACTION_UP -> {
 
-                case MotionEvent.ACTION_UP: {
                     //current_path_count = -1;
-                    for (int i = 0; i <= current_path_count; i++) {
-
-                        touch_up(i);
+                    var i = 0
+                    while (i <= current_path_count) {
+                        touch_up(i)
+                        i++
                     }
-                    mActivePointerId_list = new ArrayList<Integer>();
-
-
+                    mActivePointerId_list = ArrayList()
                 }
-                break;
-
-                case MotionEvent.ACTION_CANCEL: {
-                    mActivePointerId = INVALID_POINTER_ID;
-                    current_path_count = -1;
+                MotionEvent.ACTION_CANCEL -> {
+                    mActivePointerId = INVALID_POINTER_ID
+                    current_path_count = -1
                 }
-                break;
-
-                case MotionEvent.ACTION_POINTER_UP: {
-                    final int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-                    final int pointerId = event.getPointerId(pointerIndex);
-                    for (int i = 0; i <= current_path_count; i++) {
-                        if (pointerId == mActivePointerId_list.get(i)) {
+                MotionEvent.ACTION_POINTER_UP -> {
+                    val pointerIndex =
+                        event.action and MotionEvent.ACTION_POINTER_INDEX_MASK shr MotionEvent.ACTION_POINTER_INDEX_SHIFT
+                    val pointerId = event.getPointerId(pointerIndex)
+                    var i = 0
+                    while (i <= current_path_count) {
+                        if (pointerId == mActivePointerId_list[i]) {
                             // This was our active pointer going up. Choose a new
                             // active pointer and adjust accordingly.
-
-                            mActivePointerId_list.remove(i);
-                            touch_up(i);
-                            break;
+                            mActivePointerId_list.removeAt(i)
+                            touch_up(i)
+                            break
                         }
+                        i++
                     }
                 }
-                break;
-
-                case MotionEvent.ACTION_OUTSIDE:
-                    break;
+                MotionEvent.ACTION_OUTSIDE -> {
+                }
             }
-        } catch (Exception e) {
-
+        } catch (e: Exception) {
         }
-
-        invalidate();
-        return true;
+        invalidate()
+        return true
     }
 
-    private void touch_start(float x, float y, int count) {
-        Path m_Path = new Path();
-
-        m_Path_list.add(count, m_Path);
-
-        m_Path_list.get(count).reset();
-
-
-        m_Path_list.get(count).moveTo(x, y);
-
-        mX_list.add(count, x);
-        mY_list.add(count, y);
-
+    private fun touch_start(x: Float, y: Float, count: Int) {
+        val m_Path = Path()
+        m_Path_list.add(count, m_Path)
+        m_Path_list[count].reset()
+        m_Path_list[count].moveTo(x, y)
+        mX_list.add(count, x)
+        mY_list.add(count, y)
     }
 
-    private void touch_move(float x, float y, int count) {
-        float dx = Math.abs(x - mX_list.get(count));
-        float dy = Math.abs(y - mY_list.get(count));
+    private fun touch_move(x: Float, y: Float, count: Int) {
+        val dx = Math.abs(x - mX_list[count])
+        val dy = Math.abs(y - mY_list[count])
         if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
-            m_Path_list.get(count).quadTo(mX_list.get(count), mY_list.get(count), (x + mX_list.get(count)) / 2, (y + mY_list.get(count)) / 2);
+            m_Path_list[count].quadTo(
+                mX_list[count],
+                mY_list[count],
+                (x + mX_list[count]) / 2,
+                (y + mY_list[count]) / 2
+            )
             try {
-
-                mX_list.remove(count);
-                mY_list.remove(count);
-            } catch (Exception e) {
-                e.printStackTrace();
+                mX_list.removeAt(count)
+                mY_list.removeAt(count)
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-            mX_list.add(count, x);
-            mY_list.add(count, y);
+            mX_list.add(count, x)
+            mY_list.add(count, y)
         }
     }
 
-    private void touch_up(int count) {
-        m_Path_list.get(count).lineTo(mX_list.get(count), mY_list.get(count));
+    private fun touch_up(count: Int) {
+        m_Path_list[count].lineTo(mX_list[count], mY_list[count])
 
         // commit the path to our offscreen
-        m_Canvas.drawPath(m_Path_list.get(count), m_Paint);
+        m_Canvas!!.drawPath(m_Path_list[count], m_Paint!!)
 
         // kill this so we don't double draw
-        Paint newPaint = new Paint(m_Paint); // Clones the mPaint object
-        arrayListPaths.add(new Pair<Path, Paint>(m_Path_list.get(count), newPaint));
-        m_Path_list.remove(count);
-        mX_list.remove(count);
-        mY_list.remove(count);
+        val newPaint = Paint(m_Paint) // Clones the mPaint object
+        arrayListPaths.add(
+            Pair(
+                m_Path_list[count], newPaint
+            )
+        )
+        m_Path_list.removeAt(count)
+        mX_list.removeAt(count)
+        mY_list.removeAt(count)
+    }
+
+    companion object {
+        private const val TOUCH_TOLERANCE = 4f
+
+        //   private Path            m_Path;
+        private const val INVALID_POINTER_ID = -1
     }
 }

@@ -1,137 +1,107 @@
-package smartboard.fyp.com.smartapp;
+package smartboard.fyp.com.smartapp
 
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Base64;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Base64
+import android.util.Log
+import android.view.View
+import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
+import com.github.barteksc.pdfviewer.PDFView
+import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener
+import com.github.barteksc.pdfviewer.listener.OnPageChangeListener
+import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
+import com.shockwave.pdfium.PdfDocument.Bookmark
+import java.io.*
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.github.barteksc.pdfviewer.PDFView;
-import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
-import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
-import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
-import com.shockwave.pdfium.PdfDocument;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
-
-public class PdfActivity extends AppCompatActivity implements OnPageChangeListener, OnLoadCompleteListener {
-    PDFView pdfView;
-    Integer pageNumber = 0;
-    String pdfFileName;
-    String TAG = "PdfActivity";
-    int position = -1;
-    private ImageView screenShotImageView, imageView;
-    private View main;
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pdf);
-        screenShotImageView = findViewById(R.id.screenshot_imageview);
-        imageView = findViewById(R.id.imageView);
-        main = findViewById(R.id.main);
-        init();
-
-
-        screenShotImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Bitmap b = ScreenShot.takescreenshotOfRootView(imageView);
-                imageView.setImageBitmap(b);
-                main.setBackgroundColor(Color.parseColor("#999999"));
-                saveBitmap(b);
-
-            }
-        });
+class PdfActivity : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteListener {
+    var pdfView: PDFView? = null
+    var pageNumber = 0
+    var pdfFileName: String? = null
+    var TAG = "PdfActivity"
+    var position = -1
+    private lateinit var screenShotImageView: ImageView
+    private lateinit var imageView: ImageView
+    private lateinit var main: View
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_pdf)
+        screenShotImageView = findViewById(R.id.screenshot_imageview)
+        imageView = findViewById(R.id.imageView)
+        main = findViewById(R.id.main)
+        init()
+        screenShotImageView.setOnClickListener(View.OnClickListener {
+            val b = ScreenShot.takescreenshotOfRootView(imageView)
+            imageView.setImageBitmap(b)
+            main.setBackgroundColor(Color.parseColor("#999999"))
+            saveBitmap(b)
+        })
     }
 
-
-    private void init() {
-        pdfView = findViewById(R.id.pdfView);
-        position = getIntent().getIntExtra("position", -1);
-        displayFromSdcard();
+    private fun init() {
+        pdfView = findViewById(R.id.pdfView)
+        position = intent.getIntExtra("position", -1)
+        displayFromSdcard()
     }
 
-    private void displayFromSdcard() {
-        pdfFileName = PdfViewer.fileList.get(position).getName();
-
-        pdfView.fromFile(PdfViewer.fileList.get(position))
-                .defaultPage(pageNumber)
-                .enableSwipe(true)
-
-                .swipeHorizontal(false)
-                .onPageChange(this)
-                .enableAnnotationRendering(true)
-                .onLoad(this)
-                .scrollHandle(new DefaultScrollHandle(this))
-                .load();
+    private fun displayFromSdcard() {
+        pdfFileName = PdfViewer.fileList.get(position).name
+        pdfView!!.fromFile(PdfViewer.fileList.get(position))
+            .defaultPage(pageNumber)
+            .enableSwipe(true)
+            .swipeHorizontal(false)
+            .onPageChange(this)
+            .enableAnnotationRendering(true)
+            .onLoad(this)
+            .scrollHandle(DefaultScrollHandle(this))
+            .load()
     }
 
-    private void saveBitmap(Bitmap bitmap) {
-
+    private fun saveBitmap(bitmap: Bitmap?) {
         try {
-            File mFolder = new File(getFilesDir() + "/SmartApp"); //give a name for the folder
-            File imagePath = new File(mFolder + "screenshot.png");
+            val mFolder = File("$filesDir/SmartApp") //give a name for the folder
+            val imagePath = File(mFolder.toString() + "screenshot.png")
             if (!mFolder.exists()) {
-                mFolder.mkdir();
+                mFolder.mkdir()
             }
             if (!imagePath.exists()) {
-                imagePath.createNewFile();
+                imagePath.createNewFile()
             }
-            FileOutputStream fos = null;
-
-            fos = new FileOutputStream(imagePath);
+            var fos: FileOutputStream?
+            fos = FileOutputStream(imagePath)
             // bitmap.compress(CompressFormat.PNG, 100, fos);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 60, fos);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            byte[] byteArray = byteArrayOutputStream.toByteArray();
-            String encodedByte = Base64.encodeToString(byteArray, Base64.DEFAULT);
-            Log.e("encodeByte", encodedByte);
-            fos.flush();
-            fos.close();
-
-            MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Screen", "screen");
-
-        } catch (FileNotFoundException e) {
-            Log.e("no file", e.getMessage(), e);
-        } catch (IOException e) {
-            Log.e("io", e.getMessage(), e);
+            bitmap!!.compress(Bitmap.CompressFormat.PNG, 60, fos)
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            val byteArray = byteArrayOutputStream.toByteArray()
+            val encodedByte = Base64.encodeToString(byteArray, Base64.DEFAULT)
+            Log.e("encodeByte", encodedByte)
+            fos.flush()
+            fos.close()
+            MediaStore.Images.Media.insertImage(contentResolver, bitmap, "Screen", "screen")
+        } catch (e: FileNotFoundException) {
+            Log.e("no file", e.message, e)
+        } catch (e: IOException) {
+            Log.e("io", e.message, e)
         }
-
     }
 
-    @Override
-    public void onPageChanged(int page, int pageCount) {
-        pageNumber = page;
-        setTitle(String.format("%s %s / %s", pdfFileName, page + 1, pageCount));
+    override fun onPageChanged(page: Int, pageCount: Int) {
+        pageNumber = page
+        title = String.format("%s %s / %s", pdfFileName, page + 1, pageCount)
     }
 
-
-    @Override
-    public void loadComplete(int nbPages) {
-        PdfDocument.Meta meta = pdfView.getDocumentMeta();
-        printBookmarksTree(pdfView.getTableOfContents(), "-");
-
+    override fun loadComplete(nbPages: Int) {
+        val meta = pdfView!!.documentMeta
+        printBookmarksTree(pdfView!!.tableOfContents, "-")
     }
 
-    public void printBookmarksTree(List<PdfDocument.Bookmark> tree, String sep) {
-        for (PdfDocument.Bookmark b : tree) {
-
-            Log.e(TAG, String.format("%s %s, p %d", sep, b.getTitle(), b.getPageIdx()));
-
+    fun printBookmarksTree(tree: List<Bookmark>, sep: String) {
+        for (b in tree) {
+            Log.e(TAG, String.format("%s %s, p %d", sep, b.title, b.pageIdx))
             if (b.hasChildren()) {
-                printBookmarksTree(b.getChildren(), sep + "-");
+                printBookmarksTree(b.children, "$sep-")
             }
         }
     }

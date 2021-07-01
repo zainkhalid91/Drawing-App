@@ -1,134 +1,115 @@
-package smartboard.fyp.com.smartapp;
+package smartboard.fyp.com.smartapp
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.os.Environment
+import android.util.Log
+import android.widget.*
+import android.widget.AdapterView.OnItemClickListener
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import java.io.File
+import java.util.*
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import java.io.File;
-import java.util.ArrayList;
-
-public class PdfViewer extends AppCompatActivity {
-
-    public static ArrayList<File> fileList = new ArrayList<File>();
-    public static int REQUEST_PERMISSIONS = 1;
-    ListView lv_pdf;
-    PDFAdapter obj_adapter;
-    boolean boolean_permission;
-    File dir;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.lv_pdf);
-        init();
-
+class PdfViewer : AppCompatActivity() {
+    lateinit var lv_pdf: ListView
+    var obj_adapter: PDFAdapter? = null
+    var boolean_permission = false
+    var dir: File? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.lv_pdf)
+        init()
     }
 
-    private void init() {
-
-        lv_pdf = findViewById(R.id.lv_pdf);
-        dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
-        fn_permission();
-
-
-        lv_pdf.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getApplicationContext(), PdfActivity.class);
-                intent.putExtra("position", i);
-                startActivity(intent);
-
-                Log.e("Position", i + "");
-            }
-        });
+    private fun init() {
+        lv_pdf = findViewById(R.id.lv_pdf)
+        dir = File(Environment.getExternalStorageDirectory().absolutePath)
+        fn_permission()
+        lv_pdf.onItemClickListener = OnItemClickListener { adapterView, view, i, l ->
+            val intent = Intent(applicationContext, PdfActivity::class.java)
+            intent.putExtra("position", i)
+            startActivity(intent)
+            Log.e("Position", i.toString() + "")
+        }
     }
 
-    public ArrayList<File> getfile(File dir) {
-        File[] listFile = dir.listFiles();
-        if (listFile != null && listFile.length > 0) {
-            for (int i = 0; i < listFile.length; i++) {
-
-                if (listFile[i].isDirectory()) {
-                    getfile(listFile[i]);
-
+    fun getfile(dir: File?): ArrayList<File> {
+        val listFile = dir!!.listFiles()
+        if (listFile != null && listFile.size > 0) {
+            for (i in listFile.indices) {
+                if (listFile[i].isDirectory) {
+                    getfile(listFile[i])
                 } else {
-
-                    boolean booleanpdf = false;
-                    if (listFile[i].getName().endsWith(".pdf")) {
-
-                        for (int j = 0; j < fileList.size(); j++) {
-                            if (fileList.get(j).getName().equals(listFile[i].getName())) {
-                                booleanpdf = true;
+                    var booleanpdf = false
+                    if (listFile[i].name.endsWith(".pdf")) {
+                        for (j in fileList.indices) {
+                            if (fileList[j].name == listFile[i].name) {
+                                booleanpdf = true
                             } else {
-
                             }
                         }
-
                         if (booleanpdf) {
-                            booleanpdf = false;
+                            booleanpdf = false
                         } else {
-                            fileList.add(listFile[i]);
-
+                            fileList.add(listFile[i])
                         }
                     }
                 }
             }
         }
-        return fileList;
+        return fileList
     }
 
-
-    private void fn_permission() {
-        if ((ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-
-            if ((ActivityCompat.shouldShowRequestPermissionRationale(PdfViewer.this, android.Manifest.permission.READ_EXTERNAL_STORAGE))) {
-
-
+    private fun fn_permission() {
+        if (ContextCompat.checkSelfPermission(
+                applicationContext,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    this@PdfViewer,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                )
+            ) {
             } else {
-                ActivityCompat.requestPermissions(PdfViewer.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
-                        REQUEST_PERMISSIONS);
-
+                ActivityCompat.requestPermissions(
+                    this@PdfViewer, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    REQUEST_PERMISSIONS
+                )
             }
         } else {
-            boolean_permission = true;
-
-            getfile(dir);
-
-            obj_adapter = new PDFAdapter(getApplicationContext(), fileList);
-            lv_pdf.setAdapter(obj_adapter);
-
+            boolean_permission = true
+            getfile(dir)
+            obj_adapter = PDFAdapter(applicationContext, fileList)
+            lv_pdf.adapter = obj_adapter
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_PERMISSIONS) {
-
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                boolean_permission = true;
-                getfile(dir);
-
-                obj_adapter = new PDFAdapter(getApplicationContext(), fileList);
-                lv_pdf.setAdapter(obj_adapter);
-
+            if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                boolean_permission = true
+                getfile(dir)
+                obj_adapter = PDFAdapter(applicationContext, fileList)
+                lv_pdf.adapter = obj_adapter
             } else {
-                Toast.makeText(getApplicationContext(), "Please allow the permission", Toast.LENGTH_LONG).show();
-
+                Toast.makeText(applicationContext, "Please allow the permission", Toast.LENGTH_LONG)
+                    .show()
             }
         }
     }
 
+    companion object {
+        var fileList = ArrayList<File>()
+        var REQUEST_PERMISSIONS = 1
+    }
 }

@@ -1,46 +1,43 @@
-package smartboard.fyp.com.smartapp;
+package smartboard.fyp.com.smartapp
 
-import android.app.Activity;
-import android.content.Intent;
+import android.app.Activity
+import android.content.Intent
 
-public class DrawingActivityBuilder {
+class DrawingActivityBuilder private constructor(  //Variables as objects
+    private val context: Activity
+) {
+    private val intent: Intent
+    fun enableToast(enabled: Boolean): DrawingActivityBuilder {
+        intent.putExtra(TOAST_ENABLED, enabled)
+        return this
+    }
 
-    //Constants
-    public static final String TOAST_ENABLED = "ToastEnabled";
-    public static final String TITLE = "Title";
-    public static final String DEFAULT_UTILITY = "DefaultUtility";
+    fun setTitle(title: String?): DrawingActivityBuilder {
+        intent.putExtra(TITLE, title)
+        return this
+    }
 
-    //Variables as objects
-    private Activity context;
-    private Intent intent;
+    fun setDefaultUtility(defaultUtility: Int): DrawingActivityBuilder {
+        intent.putExtra(DEFAULT_UTILITY, defaultUtility)
+        return this
+    }
+
+    fun draw(requestCode: Int) {
+        context.startActivityForResult(intent, requestCode)
+    }
+
+    companion object {
+        //Constants
+        val TOAST_ENABLED: String = "ToastEnabled"
+        val TITLE: String = "Title"
+        val DEFAULT_UTILITY: String = "DefaultUtility"
+        fun getInstance(context: Activity): DrawingActivityBuilder {
+            return DrawingActivityBuilder(context)
+        }
+    }
 
     //Variables
-
-    private DrawingActivityBuilder(Activity context) {
-        this.context = context;
-        this.intent = new Intent(context, MainActivity.class);
-    }
-
-    public static DrawingActivityBuilder getInstance(Activity context) {
-        return new DrawingActivityBuilder(context);
-    }
-
-    public DrawingActivityBuilder enableToast(boolean enabled) {
-        intent.putExtra(TOAST_ENABLED, enabled);
-        return this;
-    }
-
-    public DrawingActivityBuilder setTitle(String title) {
-        intent.putExtra(TITLE, title);
-        return this;
-    }
-
-    public DrawingActivityBuilder setDefaultUtility(int defaultUtility) {
-        intent.putExtra(DEFAULT_UTILITY, defaultUtility);
-        return this;
-    }
-
-    public void draw(int requestCode) {
-        context.startActivityForResult(intent, requestCode);
+    init {
+        intent = Intent(context, MainActivity::class.java)
     }
 }

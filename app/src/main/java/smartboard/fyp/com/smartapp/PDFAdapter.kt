@@ -1,70 +1,45 @@
-package smartboard.fyp.com.smartapp;
+package smartboard.fyp.com.smartapp
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.TextView
+import java.io.File
+import java.util.*
 
-import java.io.File;
-import java.util.ArrayList;
-
-
-public class PDFAdapter extends ArrayAdapter<File> {
-
-
-    Context context;
-    ViewHolder viewHolder;
-    ArrayList<File> al_pdf;
-
-    public PDFAdapter(Context context, ArrayList<File> al_pdf) {
-        super(context, R.layout.adapter_pdf, al_pdf);
-        this.context = context;
-        this.al_pdf = al_pdf;
-
+class PDFAdapter(context: Context, var al_pdf: ArrayList<File>) : ArrayAdapter<File?>(
+    context, R.layout.adapter_pdf, al_pdf as List<File?>
+) {
+    var viewHolder: ViewHolder? = null
+    override fun getItemViewType(position: Int): Int {
+        return position
     }
 
-
-    @Override
-    public int getItemViewType(int position) {
-        return position;
-    }
-
-    @Override
-    public int getViewTypeCount() {
-        if (al_pdf.size() > 0) {
-            return al_pdf.size();
+    override fun getViewTypeCount(): Int {
+        return if (al_pdf.size > 0) {
+            al_pdf.size
         } else {
-            return 1;
+            1
         }
     }
 
-    @Override
-    public View getView(final int position, View view, ViewGroup parent) {
-
-
+    override fun getView(position: Int, view: View?, parent: ViewGroup): View {
+        var view = view
         if (view == null) {
-            view = LayoutInflater.from(getContext()).inflate(R.layout.adapter_pdf, parent, false);
-            viewHolder = new ViewHolder();
-            viewHolder.tv_filename = view.findViewById(R.id.tv_name);
-
-            view.setTag(viewHolder);
+            view = LayoutInflater.from(context).inflate(R.layout.adapter_pdf, parent, false)
+            viewHolder = ViewHolder()
+            viewHolder!!.tv_filename = view.findViewById(R.id.tv_name)
+            view.tag = viewHolder
         } else {
-            viewHolder = (ViewHolder) view.getTag();
-
+            viewHolder = view.tag as ViewHolder
         }
-
-        viewHolder.tv_filename.setText(al_pdf.get(position).getName());
-        return view;
-
+        viewHolder!!.tv_filename!!.text = al_pdf[position].name
+        return view!!
     }
 
-    public class ViewHolder {
-
-        TextView tv_filename;
-
-
+    inner class ViewHolder {
+        var tv_filename: TextView? = null
     }
-
 }

@@ -1,20 +1,18 @@
-package smartboard.fyp.com.smartapp;
+package smartboard.fyp.com.smartapp
 
-import android.graphics.Bitmap;
-import android.view.View;
+import android.graphics.Bitmap
+import android.view.View
 
-public class ScreenShot {
-
-    public static Bitmap takescreenshot(View v) {
-        v.setDrawingCacheEnabled(true);
-        v.buildDrawingCache(true);
-        Bitmap b = Bitmap.createBitmap(v.getDrawingCache());
-        v.setDrawingCacheEnabled(false);
-        return b;
+object ScreenShot {
+    fun takescreenshot(v: View): Bitmap {
+        v.isDrawingCacheEnabled = true
+        v.buildDrawingCache(true)
+        val b = Bitmap.createBitmap(v.drawingCache)
+        v.isDrawingCacheEnabled = false
+        return b
     }
 
-    public static Bitmap takescreenshotOfRootView(View v) {
-        return takescreenshot(v.getRootView());
+    fun takescreenshotOfRootView(v: View?): Bitmap {
+        return takescreenshot(v!!.rootView)
     }
-
 }
